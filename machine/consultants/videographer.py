@@ -1,5 +1,7 @@
 from consultant import Consultant
 import cv2
+import sys
+import random
 
 class Videographer(Consultant):
 
@@ -8,6 +10,9 @@ class Videographer(Consultant):
     Sets the instance video. This is necessary
     for readNextFrame, etc.
     """
+    self.numFrames = 1
+    self.currentFrame = 0
+
     if videoFile:
       self.vid = cv2.VideoCapture(videoFile)
     else:
@@ -61,6 +66,7 @@ class Videographer(Consultant):
       count += 1
 
     vid.release()
+    self.numFrames = len(frames)
     return frames
 
 
@@ -76,9 +82,88 @@ class Videographer(Consultant):
         v.write(frame)
       index += 1
 
+    self.currentFrame = 0
     v.release()
 
   # MODIFICATION METHODS
+
+  def breathe(self, videoFile):
+    frames = self.readAllFrames(videoFile)
+    x, y = self._getDimensions(frames[0])
+    maxFactor = len(frames) / 6
+    factor = 1
+    locations = []
+    progress = 0
+    complete = len(frames)
+
+    for i in range(10000):
+      locations.append((random.randint(0,x - 1), random.randint(0,y - 1)))
+
+    for image in frames:
+      self._update_progress(progress / complete)
+      progress += 1
+      for location in locations:
+        image = self._grow(image, location, factor)
+
+      if factor >= maxFactor:
+        factor = 0
+
+      factor += 1
+
+    return frames
+
+  def _grow(self, image, center, maxFactor):
+    if not image is None:
+      x, y = center
+      color = image[center]
+
+      for factor in range(maxFactor):
+        for index in range(-factor, factor + 1):
+          # This will produce a square
+          try:
+            image[x - factor, y + index] = color
+            image[x + factor, y + index] = color
+            image[x + index, y - factor] = color
+            image[x + index, y + factor] = color
+          except Exception: # There will be value erros, but I don't care.
+            pass
+
+    return image
+
+
+  def removeColor(self, image, color):
+    x, y = self._getDimensions(image)
+
+    for row in range(x - 1):
+      for column in range(y - 1):
+        if self._isSimilar(image[row, column], color, sensitivity=100):
+          image[row, column] = [255, 255, 255]
+
+    return image
+
+  def blackToWhite(self, image, axis="x"):
+    if not image is None:
+      self.currentFrame += 1
+      self._update_progress(100 * (float(self.currentFrame) / self.numFrames))
+      x = y = 1
+      palette = self._generatePalette(image)
+      counter = 0
+      if axis == "x":
+        x, y = self._getDimensions(image)
+      elif axis == "y":
+        y, x = self._getDimensions(image)
+
+      for row in range(x - 1):
+        for column in range(y - 1):
+          if axis == "x":
+            image[row, column] = palette[counter]
+          elif axis == "y":
+            image[column, row] = palette[counter]
+
+          counter += 1
+
+    return image
+
 
   def midlineHorizontal(self, image):
     """
@@ -97,6 +182,40 @@ class Videographer(Consultant):
 
     return image
 
+  def midlineVertical(self, image):
+    """
+    Takes a sample pixel from the midline of each column
+    makes the column that color
+    """
+    if not image is None:
+      numRows, numColumns = self._getDimensions(image)
+
+      mid = numRows / 2
+
+      for row in range(numRows - 1):
+        for column in range(numColumns - 1):
+          color = image[mid, column]
+          image[row, column] = color
+
+    return image
+
+
+  def midlineDiagonal(self, image):
+    """
+    Takes a sample pixel along the top-left to bottom
+    right diagonal and extends that along the same vector.
+    """
+    numRows, numColumns = self._getDimensions(image)
+    newImage = image
+    mid = numRows / 2
+
+    for row in range(numRows - 1):
+      for column in range(numColumns - 1):
+        newImage[row, column] = image[row, column]
+        image[row, column] = image[row, column + 1]
+
+    return image
+
   def groupBySimilarity(self, image):
     numRows, numColumns = self._getDimensions(image)
     new = image
@@ -111,8 +230,38 @@ class Videographer(Consultant):
           print "similar"
           print color
 
+    # TODO
 
-  def findReddest(self, image):
+  # UTILITY FUNCTIONS
+
+  def _findColor(self, color, image, similar=True, sensitivity=20):
+    x, y = self._getDimensions(image)
+    locations = []
+
+    for row in range(x - 1):
+      for column in range(y - 1):
+        if self._isSimilar(image[row, column], color):
+          locations.append((row, column))
+
+    return locations
+
+  def _findSimilar(self, color, palette):
+    """
+    Will find similar pixels to the specified color in your
+    palette. Will pop items off of palette and return a 
+    modified copy.
+    Useful if you want to use each pixel only one time.
+    """
+    similar = []
+    index = 0
+    for c in palette:
+      if self._isSimilar(color, c):
+        similar.append(palette.pop(index))
+      index += 1
+
+    return (similar, palette)
+
+  def _findReddest(self, image):
     numRows, numColumns = self._getDimensions(image)
     location = (0, 0)
     highestR = 0
@@ -136,8 +285,7 @@ class Videographer(Consultant):
     x, y = location
     print "Final %d, %d" % (x, y)
     print image[x][y]
-
-  # UTILITY FUNCTIONS
+    # TODO
 
   def _getDimensions(self, image, dimension="both"):
     if dimension == "rows":
@@ -162,6 +310,32 @@ class Videographer(Consultant):
       return True
     else:
       return False
+
+  def _generatePalette(self, image, whiteFirst=False):
+    """
+    Returns a sorted array of colors present in 'image'
+    Disclaimer: I know numpy sorting would be so much faster,
+    but since the end resuly is arrays of 3 it doesn't work how I want.
+    """
+    numRows, numColumns = self._getDimensions(image)
+    palette = self._flatten(numRows, numColumns, image)
+    return sorted(palette, key=self._paletteSum, reverse=whiteFirst)
+
+  def _flatten(self, numRows, numColumns, image):
+    arr = []
+
+    for row in range(numRows - 1):
+      for column in range(numColumns - 1):
+        arr.append(image[row, column])
+
+    return arr
+
+  def _paletteSum(self, color):
+    return int(color[0]) + int(color[1]) + int(color[2])
+
+  def _update_progress(self, progress):
+    sys.stdout.write('\r[{0}] {1}%'.format('#'*(int(progress) / 10), progress))
+    sys.stdout.flush()
 
   def __init__(self):
     """

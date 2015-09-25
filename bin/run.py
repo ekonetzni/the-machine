@@ -6,6 +6,13 @@ import cv2
 import click
 import numpy as np
 
+
+def colorCompare(a, b):
+  return paletteSum(a) - paletteSum(b)
+
+def paletteSum(color):
+  return int(color[0]) + int(color[1]) + int(color[2])
+
 # NOTE: It seems values are actually stored as BGR.
 
 @click.command()
@@ -22,6 +29,24 @@ def run(service, video, out):
   if service == 'midline-h':
     print "Using midline horizontal processing..."
     v.writeAllFrames(out, map(v.midlineHorizontal, v.readAllFrames(video)))
+  elif service == 'midline-v':
+    print "Using midline vertical processing..."
+    v.writeAllFrames(out, map(v.midlineVertical, v.readAllFrames(video)))
+  elif service == 'midline-d':
+    print "Using midline diagonal processing..."
+    cv2.imshow('image', v.midlineDiagonal(v.readNextFrame()))
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    #v.writeAllFrames(out, map(v.midlineDiagonal, v.readAllFrames(video)))
+  elif service == 'sorted-asc-horizontal':
+    print "Sorting with black first"
+    v.writeAllFrames(out, map(v.blackToWhite, v.readAllFrames(video)))
+  elif service == 'sorted-asc-vertical':
+    print "Sorting with black first"
+    v.writeAllFrames(out, map(v.blackToWhiteVertical, v.readAllFrames(video)))
+  elif service == 'breathe':
+    print "Breathing..."
+    v.writeAllFrames(out, v.breathe(video))
   elif service == 'hilarious':
     v1 = Videographer()
     v1.video('../assets/chesapeake-1080.mp4')
@@ -38,12 +63,13 @@ def run(service, video, out):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
   else:
-    #groupBySimilarity(image)
-    #_findReddest(image)
+    image = v.readNextFrame()
 
-  #cv2.imshow('image', image)
-  #cv2.waitKey(0)
-  #cv2.destroyAllWindows()
+    im = v.blackToWhite(image)
+
+    cv2.imshow('image', im)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
 if __name__ == '__main__':
   run()
