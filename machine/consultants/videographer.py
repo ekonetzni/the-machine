@@ -93,22 +93,28 @@ class Videographer(Consultant):
     maxFactor = len(frames) / 6
     factor = 1
     locations = []
-    progress = 0
-    complete = len(frames)
+    self.currentFrame = 0
+    self.numFrames = len(frames)
+    grow = True
 
-    for i in range(10000):
+    for i in range(100000):
       locations.append((random.randint(0,x - 1), random.randint(0,y - 1)))
 
     for image in frames:
-      self._update_progress(progress / complete)
-      progress += 1
+      self.currentFrame += 1
+      self._update_progress(100 * (self.currentFrame / self.numFrames))
       for location in locations:
         image = self._grow(image, location, factor)
 
       if factor >= maxFactor:
-        factor = 0
+        grow = False
+      elif factor <= 0:
+        grow = True
 
-      factor += 1
+      if grow:
+        factor += 1
+      else:
+        factor -= 1
 
     return frames
 
