@@ -2,17 +2,47 @@ from consultant import Consultant
 import cv2
 import sys
 import random
+import os
+import numpy
+import time
 
 class Videographer(Consultant):
+
+  def auto(self, source, output, method="midlineVertical"):
+    # This needs to read frame by frame and dump to disk instead
+    # of opening the whole video and processing from there.
+    videos = os.listdir(source)
+    for video in videos:
+      print "Processing video %s/%s" % (source, video)
+      self.video("%s/%s" % (source, video))
+
+      destination = "%s/%s" % (output, video)
+      func = getattr(self, method)
+
+      # We might lose the first frame doing this, whatever.
+      height, width = self._getDimensions(self.readNextFrame()) 
+
+      fourcc = cv2.cv.CV_FOURCC(*'mp4v')
+      print "Creating video container at %s" % destination
+      v = cv2.VideoWriter(destination, fourcc, 15, (width, height))
+
+      moreFrames = True
+      while moreFrames:
+        image = self.readNextFrame()
+        if numpy.any(image):
+          frame = func(image)
+          v.write(frame)
+        else:
+          moreFrames = False
+          v.release()
 
   def video(self, videoFile=False):
     """
     Sets the instance video. This is necessary
     for readNextFrame, etc.
     """
-    self.numFrames = 1
     self.currentFrame = 0
-
+    # I think this should set numFrames and what not as well.
     if videoFile:
       self.vid = cv2.VideoCapture(videoFile)
     else:
@@ -53,6 +83,7 @@ class Videographer(Consultant):
       videoFile = self.vid
 
     frames = []
+    self.currentFrame = 0
     success = True
     count = 0
     vid = cv2.VideoCapture(videoFile)
@@ -69,25 +100,63 @@ class Videographer(Consultant):
     self.numFrames = len(frames)
     return frames
 
-
   def writeAllFrames(self, fileName, frames):
     height, width, channels = frames[0].shape
     fourcc = cv2.cv.CV_FOURCC(*'mp4v')
-    v = cv2.VideoWriter(fileName, fourcc, 30, (width, height)) # filename, FOUR_CC Codec, fps, frameSize, isColor
+    v = cv2.VideoWriter(fileName, fourcc, 15, (width, height)) # filename, FOUR_CC Codec, fps, frameSize, isColor
 
-    index = 0
     print "Writing %d frames..." % len(frames)
     for frame in frames:
-      if not index == len(frames) - 1: # if not last frame
+      if not frame is None:
         v.write(frame)
-      index += 1
 
     self.currentFrame = 0
     v.release()
 
   # MODIFICATION METHODS
 
+  def swirl(self, image):
+    # Choose a point
+    # Assemble palette
+    # Begin grouping out from point
+    if not image is None:
+      numRows, numColumns = self._getDimensions(image)
+
+      center = image[numRows / 2, numColumns / 2]
+      print "Generating palette..."
+      palette = self._generatePalette(image)
+      print "Palette generated."
+      print "Center"
+      print center
+      #TODO
+      distanceFromCenter = 1
+      
+      for row in range(numRows - 1):
+        for column in range(numColumns - 1):
+          image[row, column] = [0, 0, 0]
+
+      print "Beginning swirl..."
+      for factor in range(5): # Just do it 100 times
+        color, palette = self._findSimilar(center, palette)
+        print color
+        for index in range(-distanceFromCenter, distanceFromCenter + 1):
+          # This will produce a square
+          try:
+            image[x - distanceFromCenter, y + index] = color
+            image[x + distanceFromCenter, y + index] = color
+            image[x + index, y - distanceFromCenter] = color
+            image[x + index, y + distanceFromCenter] = color
+          except Exception: # There will be value erros, but I don't care.
+            pass
+          distanceFromCenter += 1
+
+    #self._update_progress()
+    return image
+
   def breathe(self, videoFile):
+    """
+    This one takes a very long time
+    """
     frames = self.readAllFrames(videoFile)
     x, y = self._getDimensions(frames[0])
     maxFactor = len(frames) / 6
@@ -102,7 +171,7 @@ class Videographer(Consultant):
 
     for image in frames:
       self.currentFrame += 1
-      self._update_progress(100 * (self.currentFrame / self.numFrames))
+      self._update_progress()
       for location in locations:
         image = self._grow(image, location, factor)
 
@@ -149,8 +218,7 @@ class Videographer(Consultant):
 
   def blackToWhite(self, image, axis="x"):
     if not image is None:
-      self.currentFrame += 1
-      self._update_progress(100 * (float(self.currentFrame) / self.numFrames))
+      self._update_progress()
       x = y = 1
       palette = self._generatePalette(image)
       counter = 0
@@ -170,25 +238,34 @@ class Videographer(Consultant):
 
     return image
 
-
-  def midlineHorizontal(self, image):
+  def midlineHorizontal(self, image, width=0):
     """
     Takes a sample pixel from the midline of each row
     makes the row that color
     """
+    start = time.clock()
     if not image is None:
       numRows, numColumns = self._getDimensions(image)
 
       mid = numColumns / 2
-
+      
       for row in range(numRows - 1):
-        color = image[row, mid]
-        for column in range(numColumns - 1):
-          image[row, column] = color
+        color = self._getColor(image, (row, mid))
 
+        if width > 0:
+          r = g = b = 0
+          for i in range(width):
+            b = b + image.item(row - i, mid, 0)
+            g = g + image.item(row - i, mid, 1)
+            r = r + image.item(row - i, mid, 2)
+          color = [b / (width * 2), g  / (width *2), r / (width *2)]
+        
+        image[row, 0:numColumns] = color
+
+    self._update_progress()
     return image
 
-  def midlineVertical(self, image):
+  def midlineVertical(self, image, width=0):
     """
     Takes a sample pixel from the midline of each column
     makes the column that color
@@ -198,11 +275,18 @@ class Videographer(Consultant):
 
       mid = numRows / 2
 
-      for row in range(numRows - 1):
-        for column in range(numColumns - 1):
-          color = image[mid, column]
-          image[row, column] = color
+      for column in range(numColumns - 1):
+        color = self._getColor(image, (mid, column))
+        if width > 0:
+          r = g = b = 0
+          for i in range(width):
+            b = b + image.item(row - i, mid, 0)
+            g = g + image.item(row - i, mid, 1)
+            r = r + image.item(row - i, mid, 2)
+          color = [b / (width * 2), g  / (width *2), r / (width *2)]
+        image[0:numRows, column] = color
 
+    self._update_progress()
     return image
 
 
@@ -339,11 +423,24 @@ class Videographer(Consultant):
   def _paletteSum(self, color):
     return int(color[0]) + int(color[1]) + int(color[2])
 
-  def _update_progress(self, progress):
-    sys.stdout.write('\r[{0}] {1}%'.format('#'*(int(progress) / 10), progress))
+  def _getColor(self, image, index):
+    color = []
+    color.append(image.item(index[0], index[1], 0))
+    color.append(image.item(index[0], index[1], 1))
+    color.append(image.item(index[0], index[1], 2))
+    return color
+
+  def _update_progress(self):
+    progress = 100 * (float(self.currentFrame) / self.numFrames)
+    if progress == 0:
+      print "\n"
+    sys.stdout.write('\r[{0}] {1}%'.format('#'*(int(progress) / 10), round(progress, 1)))
     sys.stdout.flush()
+    self.currentFrame += 1
 
   def __init__(self):
     """
     Videographer
     """
+    self.currentFrame = 0
+    self.numFrames = 1000 # This is arbitrarily set.

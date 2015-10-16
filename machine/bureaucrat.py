@@ -1,9 +1,16 @@
 from worker import Worker
+from consultants.videographer import Videographer
+from consultants.buyer import Buyer
 import time
 import random
-
+import click
+import cv2
 
 class Bureaucrat(Worker):
+
+	def assignWork(self, task):
+		# Hire the constultant.
+		self.dally()
 
 	def dally(self, intervalMax=42):
 		interval = random.randint(1, intervalMax)
