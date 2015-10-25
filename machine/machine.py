@@ -4,7 +4,7 @@ import sys
 import ConfigParser
 import pickle
 
-from consultants.buyer import Buyer
+#from consultants.buyer import Buyer
 from consultants.videographer import Videographer
 
 class Machine(object):
@@ -164,5 +164,5 @@ class Machine(object):
 
 
 
-m = Machine("/Users/ekonetzni/Dropbox/code/the-machine/machine/config/machine.cfg")
+m = Machine("./config/machine.cfg")
 m.start()          
