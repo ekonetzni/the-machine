@@ -19,12 +19,13 @@ class Videographer(Consultant):
       destination = "%s/%s" % (output, video)
       func = getattr(self, method)
 
-      # We might lose the first frame doing this, whatever.
-      height, width = self._getDimensions(self.readNextFrame()) 
-
+      height, width = self._getDimensions() 
+      #fourcc = self.vid.get(cv2.cv.CV_CAP_PROP_FOURCC)
       fourcc = cv2.cv.CV_FOURCC(*'mp4v')
+      fps = self.vid.get(cv2.cv.CV_CAP_PROP_FPS)
+
       print "Creating video container at %s" % destination
-      v = cv2.VideoWriter(destination, fourcc, 15, (width, height))
+      v = cv2.VideoWriter(destination, fourcc, fps, (width, height))
 
       moreFrames = True
       while moreFrames:
@@ -45,6 +46,7 @@ class Videographer(Consultant):
     # I think this should set numFrames and what not as well.
     if videoFile:
       self.vid = cv2.VideoCapture(videoFile)
+      self.numFrames = self.vid.get(cv2.cv.CV_CAP_PROP_FRAME_COUNT)
     else:
       return self.vid
 
@@ -96,8 +98,9 @@ class Videographer(Consultant):
 
       count += 1
 
+    self.numFrames = vid.get(cv2.cv.CV_CAP_PROP_FRAME_COUNT)
     vid.release()
-    self.numFrames = len(frames)
+
     return frames
 
   def writeAllFrames(self, fileName, frames):
@@ -377,11 +380,11 @@ class Videographer(Consultant):
     print image[x][y]
     # TODO
 
-  def _getDimensions(self, image, dimension="both"):
-    if dimension == "rows":
-      return len(image)
-    elif dimension == "columns":
-      return len(image[0])
+  def _getDimensions(self, image=None):
+    if image is None:
+      width = self.vid.get(cv2.cv.CV_CAP_PROP_FRAME_WIDTH)
+      height = self.vid.get(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT)
+      return int(height), int(width)
     else:
       return (len(image), len(image[0]))
 
@@ -443,4 +446,3 @@ class Videographer(Consultant):
     Videographer
     """
     self.currentFrame = 0
-    self.numFrames = 1000 # This is arbitrarily set.
