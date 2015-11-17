@@ -2,6 +2,8 @@ import os, sys
 sys.path.insert(0, os.path.abspath('..'))
 
 from machine.consultants.videographer import Videographer
+from machine.consultants.buyer import Buyer
+
 import cv2
 import click
 import numpy as np
@@ -63,13 +65,12 @@ def run(service, video, out):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
   else:
-    image = v.readNextFrame()
+    b = Buyer('../assets/')
+    b.download("https://www.youtube.com/watch?v=bha24P9uw-E")
 
-    im = v.blackToWhite(image)
-
-    cv2.imshow('image', im)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    #cv2.imshow('image', im)
+    #cv2.waitKey(0)
+    #cv2.destroyAllWindows()
 
 if __name__ == '__main__':
   run()

@@ -3,6 +3,7 @@ import thread
 import sys
 import ConfigParser
 import pickle
+import cv2
 
 from consultants.buyer import Buyer
 from consultants.videographer import Videographer
@@ -55,27 +56,47 @@ class Machine(object):
             print "Machine has encountered a problem."
             print detail
 
-    def videoMode(self):
-        prompt = "video mode>"
-        self.method = 'midlineHorizontal'
-        self.storage = self.config.get('settings', 'storage')
-        self.output = self.config.get('settings', 'output')
+    def imageMode(self):
+        prompt = "image mode > "
         
         while True:
             rawInput = raw_input(prompt).split()
             self.state["action"] = rawInput[0]
             if self.state["action"] == "quit":
                 break
-            elif self.state["action"] == "set":
-                try:
-                    setattr(self, rawInput[1], rawInput[2])
-                    print "%s set to %s" % (rawInput[1], rawInput[2])
-                except AttributeError, IndexError:
-                    print "Unknown setting or incorrect # of arguments."
-                    print "set <setting> <value>"
             elif self.state["action"] == "go":
                 v = Videographer()
-                v.auto(self.storage, self.output, method=self.method)
+                v.video(rawInput[2])
+                try:
+                    func = getattr(v, rawInput[1])
+                    cv2.imshow('image.jpg', func(v.readNextFrame(), exclusion=True))
+                except AttributeError as detail:
+                    print detail
+
+    def videoMode(self):
+        prompt = "video mode >"
+        settings = {
+            "source"    : self.config.get('settings', 'source'),
+            "output"    : self.config.get('settings', 'output'),
+            "speed"     : self.config.get('settings', 'speed'),
+            "overlay"   : self.config.get('settings', 'overlay'),
+            "method"    : self.config.get('settings', 'method')
+        }
+
+        while True:
+            rawInput = raw_input(prompt).split()
+            self.state["action"] = rawInput[0]
+            if self.state["action"] == "quit":
+                break
+            elif self.state["action"] == "set":
+                print "Setting %s to %s" % (rawInput[1], rawInput[2])
+                settings[rawInput[1]] = rawInput[2]
+            elif self.state["action"] == "settings":
+                for setting, value in settings.iteritems():
+                    print "%s is set to %s" % (setting, value)
+            elif self.state["action"] == "go":
+                v = Videographer()
+                v.auto(settings, method=settings["method"])
                 
     def devMode(self):
         while True:
@@ -164,5 +185,5 @@ class Machine(object):
 
 
 
-m = Machine("/Users/ekonetzni/Dropbox/code/the-machine/machine/config/machine.cfg")
+m = Machine("./config/machine.cfg")
 m.start()          

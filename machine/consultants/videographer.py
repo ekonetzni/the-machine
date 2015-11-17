@@ -7,35 +7,180 @@ import numpy
 import time
 
 class Videographer(Consultant):
+  
+  def midlineSwitch(self, image):
+    """
+    This plays well with width probably.
+    """
+    if not image is None:
+      numRows, numColumns = self._getDimensions(image)
 
-  def auto(self, source, output, method="midlineVertical"):
-    # This needs to read frame by frame and dump to disk instead
-    # of opening the whole video and processing from there.
-    videos = os.listdir(source)
-    for video in videos:
-      print "Processing video %s/%s" % (source, video)
-      self.video("%s/%s" % (source, video))
+      mid = numColumns / 2
 
-      destination = "%s/%s" % (output, video)
-      func = getattr(self, method)
+      direction = "left"
 
-      height, width = self._getDimensions() 
-      #fourcc = self.vid.get(cv2.cv.CV_CAP_PROP_FOURCC)
-      fourcc = cv2.cv.CV_FOURCC(*'mp4v')
-      fps = self.vid.get(cv2.cv.CV_CAP_PROP_FPS)
-
-      print "Creating video container at %s" % destination
-      v = cv2.VideoWriter(destination, fourcc, fps, (width, height))
-
-      moreFrames = True
-      while moreFrames:
-        image = self.readNextFrame()
-        if numpy.any(image):
-          frame = func(image)
-          v.write(frame)
+      for row in range(numRows - 1):
+        color = self._getColor(image, (row, mid))
+        if row % 20 == 0:
+            direction = 'left' if direction == 'right' else 'right'
+        
+        if direction == 'left':
+          image[row, 0:mid] = color
         else:
-          moreFrames = False
-          v.release()
+          image[row, mid:numColumns] = color
+
+    self._update_progress()
+    return image
+
+  def midlineWidth(self, image, width):
+    """
+    Makes shit like, 18 colors. If that's what you want.
+    """
+    if not image is None:
+      numRows, numColumns = self._getDimensions(image)
+
+      mid = numColumns / 2
+
+      direction = 'left'
+      for row in range(numRows - 1):
+        if width > 0 and row % width == 0: # Every nth row
+          color = self._getColor(image, (row, mid))
+          if row % 10 == 0:
+            direction = 'left' if direction == 'right' else 'right'
+
+          for i in range(width):
+            try:
+              if direction == 'left':
+                image[row - i, 0:mid] = color
+                image[row + i, 0:mid] = color
+              else:
+                image[row - i, mid:numColumns] = color
+                image[row + i, mid:numColumns] = color
+            except: # Yeah there'll be index errors. whatev.
+              pass
+
+    self._update_progress()
+    return image 
+
+
+  def midlineHorizontalVerticalBreaks(self, image):
+    """
+    Takes a sample pixel from the midline of each row
+    makes the row that color
+    """
+    if not image is None:
+      numRows, numColumns = self._getDimensions(image)
+
+      mid = numColumns / 2
+
+      for row in range(numRows - 1):
+        color = self._getColor(image, (row, mid))
+        for column in range(numColumns - 1):
+          if column % 15 > 0 and row % 2 == 0:
+            image[row, column] = color
+
+    self._update_progress()
+    return image
+
+  def midlineGrid(self, image):
+    """
+    Takes a sample pixel from the midline of each row
+    makes the row that color
+    """
+    if not image is None:
+      numRows, numColumns = self._getDimensions(image)
+
+      mid = numColumns / 2
+
+      for row in range(numRows - 1):
+        if row % 25 > 0:
+          color = self._getColor(image, (row, mid))
+          for column in range(numColumns - 1):
+            if column % 25 > 0:
+              image[row, column] = color
+
+    self._update_progress()
+    return image
+
+
+  def midlineExclusion(self, image):
+    """
+    Takes a sample pixel from the midline of each row
+    makes the row that color
+    """
+    if not image is None:
+      numRows, numColumns = self._getDimensions(image)
+
+      mid = numColumns / 2
+
+      for row in range(numRows - 1):
+        color = self._getColor(image, (row, mid))
+        for column in range(numColumns - 1):
+          if self.eMap.item(row, column) < 255:
+            image[row, column] = color
+
+    self._update_progress()
+    return image
+
+  def midlineHorizontal(self, image, width=0, exclusion=False):
+    """
+    Takes a sample pixel from the midline of each row
+    makes the row that color
+    """
+    if not image is None:
+      numRows, numColumns = self._getDimensions(image)
+
+      mid = numColumns / 2
+
+      for row in range(numRows - 1):
+        if width > 0 and row % width == 0: # Every 5th row
+          color = self._getColor(image, (row, mid))
+          for i in range(width):
+            try:
+              image[row - i, 0:numColumns] = color
+              image[row + i, 0:numColumns] = color
+            except: # Yeah there'll be index errors. whatev.
+              pass
+
+    self._update_progress()
+    return image
+
+  def auto(self, settings, method="midlineVertical"):
+    # This def needs to be more pythonic but eh, it works.
+    videos = os.listdir(settings["source"])
+    self.eMap = self.generateOverlay(cv2.imread('/Users/ekonetzni/Dropbox/code/the-machine/assets/rectangle-overlay-2.jpg'))
+    for video in videos:
+      if video[:1] == '.':
+        pass
+      else:
+        print "Processing video %s/%s" % (settings["source"], video)
+        self.video("%s/%s" % (settings["source"], video))
+
+        destination = "%s/%s" % (settings["output"], video)
+        func = getattr(self, method)
+
+        height, width = self._getDimensions() 
+        #fourcc = self.vid.get(cv2.cv.CV_CAP_PROP_FOURCC)
+        fourcc = cv2.cv.CV_FOURCC(*'mp4v')
+        fps = self.vid.get(cv2.cv.CV_CAP_PROP_FPS) * float(settings["speed"])
+
+        print "Creating video %s at %ffps" % (destination, fps)
+        v = cv2.VideoWriter(destination, fourcc, fps, (width, height))
+
+
+        moreFrames = True
+        while moreFrames:
+          image = self.readNextFrame()
+          
+          if self.eMap is None and settings["overlay"] is True:
+            self.eMap = self.generateOverlay(image)
+
+          if numpy.any(image):
+            frame = func(image)
+            v.write(frame)
+          else:
+            moreFrames = False
+            v.release()
 
   def video(self, videoFile=False):
     """
@@ -43,7 +188,7 @@ class Videographer(Consultant):
     for readNextFrame, etc.
     """
     self.currentFrame = 0
-    # I think this should set numFrames and what not as well.
+
     if videoFile:
       self.vid = cv2.VideoCapture(videoFile)
       self.numFrames = self.vid.get(cv2.cv.CV_CAP_PROP_FRAME_COUNT)
@@ -117,6 +262,17 @@ class Videographer(Consultant):
     v.release()
 
   # MODIFICATION METHODS
+
+  def generateOverlay(self, image):
+    """
+    Accepts an image, converts to grayscale then returns a 
+    numpy array of the BW version.
+    """
+    print "Generating map"
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    (threshold, im_bw) = cv2.threshold(gray, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+
+    return im_bw
 
   def swirl(self, image):
     # Choose a point
@@ -239,33 +395,6 @@ class Videographer(Consultant):
 
           counter += 1
 
-    return image
-
-  def midlineHorizontal(self, image, width=0):
-    """
-    Takes a sample pixel from the midline of each row
-    makes the row that color
-    """
-    start = time.clock()
-    if not image is None:
-      numRows, numColumns = self._getDimensions(image)
-
-      mid = numColumns / 2
-      
-      for row in range(numRows - 1):
-        color = self._getColor(image, (row, mid))
-
-        if width > 0:
-          r = g = b = 0
-          for i in range(width):
-            b = b + image.item(row - i, mid, 0)
-            g = g + image.item(row - i, mid, 1)
-            r = r + image.item(row - i, mid, 2)
-          color = [b / (width * 2), g  / (width *2), r / (width *2)]
-        
-        image[row, 0:numColumns] = color
-
-    self._update_progress()
     return image
 
   def midlineVertical(self, image, width=0):
@@ -446,3 +575,4 @@ class Videographer(Consultant):
     Videographer
     """
     self.currentFrame = 0
+    self.eMap = None
