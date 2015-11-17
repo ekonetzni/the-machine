@@ -148,7 +148,7 @@ class Videographer(Consultant):
   def auto(self, settings, method="midlineVertical"):
     # This def needs to be more pythonic but eh, it works.
     videos = os.listdir(settings["source"])
-    self.eMap = self.generateOverlay(cv2.imread('/Users/ekonetzni/Dropbox/code/the-machine/assets/rectangle-overlay-2.jpg'))
+    #self.eMap = self.generateOverlay(cv2.imread('/Users/ekonetzni/Dropbox/code/the-machine/assets/rectangle-overlay-2.jpg'))
     for video in videos:
       if video[:1] == '.':
         pass
@@ -172,8 +172,8 @@ class Videographer(Consultant):
         while moreFrames:
           image = self.readNextFrame()
           
-          if self.eMap is None and settings["overlay"] is True:
-            self.eMap = self.generateOverlay(image)
+          #if self.eMap is None and settings["overlay"] is True:
+          #  self.eMap = self.generateOverlay(image)
 
           if numpy.any(image):
             frame = func(image)
@@ -191,7 +191,7 @@ class Videographer(Consultant):
 
     if videoFile:
       self.vid = cv2.VideoCapture(videoFile)
-      self.numFrames = self.vid.get(cv2.CV_CAP_PROP_FRAME_COUNT)
+      self.numFrames = self.vid.get(cv2.CAP_PROP_FRAME_COUNT)
     else:
       return self.vid
 
