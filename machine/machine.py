@@ -5,7 +5,7 @@ import ConfigParser
 import pickle
 import cv2
 
-from consultants.buyer import Buyer
+#from consultants.buyer import Buyer
 from consultants.videographer import Videographer
 
 class Machine(object):
