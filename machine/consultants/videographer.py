@@ -511,8 +511,8 @@ class Videographer(Consultant):
 
   def _getDimensions(self, image=None):
     if image is None:
-      width = self.vid.get(cv2.CV_CAP_PROP_FRAME_WIDTH)
-      height = self.vid.get(cv2.CV_CAP_PROP_FRAME_HEIGHT)
+      width = self.vid.get(cv2.CAP_PROP_FRAME_WIDTH)
+      height = self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT)
       return int(height), int(width)
     else:
       return (len(image), len(image[0]))
