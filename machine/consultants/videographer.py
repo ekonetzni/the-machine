@@ -33,8 +33,8 @@ class Videographer(Consultant):
             func = getattr(self, settings["method"])
 
             height, width = self._getDimensions() 
-            fourcc = cv2.cv.CV_FOURCC(*'mp4v')
-            fps = self.vid.get(cv2.cv.CV_CAP_PROP_FPS) * float(settings["speed"])
+            fourcc = cv2.CV_FOURCC(*'mp4v')
+            fps = self.vid.get(cv2.CV_CAP_PROP_FPS) * float(settings["speed"])
 
             print "Creating video %s at %ffps" % (destination, fps)
             v = cv2.VideoWriter(destination, fourcc, fps, (width, height))
@@ -67,9 +67,9 @@ class Videographer(Consultant):
         func = getattr(self, method)
 
         height, width = self._getDimensions() 
-        #fourcc = self.vid.get(cv2.cv.CV_CAP_PROP_FOURCC)
-        fourcc = cv2.cv.CV_FOURCC(*'mp4v')
-        fps = self.vid.get(cv2.cv.CV_CAP_PROP_FPS) * float(settings["speed"])
+        #fourcc = self.vid.get(cv2.CV_CAP_PROP_FOURCC)
+        fourcc = cv2.CV_FOURCC(*'mp4v')
+        fps = self.vid.get(cv2.CV_CAP_PROP_FPS) * float(settings["speed"])
 
         print "Creating video %s at %ffps" % (destination, fps)
         v = cv2.VideoWriter(destination, fourcc, fps, (width, height))
@@ -260,7 +260,7 @@ class Videographer(Consultant):
         destination = "%s/%s" % (settings["output"], video)
 
         height, width = self._getDimensions() 
-        fps = self.vid.get(cv2.cv.CV_CAP_PROP_FPS) * float(settings["speed"])
+        fps = self.vid.get(cv2.CV_CAP_PROP_FPS) * float(settings["speed"])
 
         # 44100 is the audio fps.
         # so 44100 per {fps} frames.
@@ -292,7 +292,7 @@ class Videographer(Consultant):
     """
     if videoFile:
       self.vid = cv2.VideoCapture(videoFile)
-      self.numFrames = self.vid.get(cv2.cv.CV_CAP_PROP_FRAME_COUNT)
+      self.numFrames = self.vid.get(cv2.CV_CAP_PROP_FRAME_COUNT)
       self.currentFrame = 0
     else:
       return self.vid
@@ -345,14 +345,14 @@ class Videographer(Consultant):
 
       count += 1
 
-    self.numFrames = vid.get(cv2.cv.CV_CAP_PROP_FRAME_COUNT)
+    self.numFrames = vid.get(cv2.CV_CAP_PROP_FRAME_COUNT)
     vid.release()
 
     return frames
 
   def writeAllFrames(self, fileName, frames):
     height, width, channels = frames[0].shape
-    fourcc = cv2.cv.CV_FOURCC(*'mp4v')
+    fourcc = cv2.CV_FOURCC(*'mp4v')
     v = cv2.VideoWriter(fileName, fourcc, 15, (width, height)) # filename, FOUR_CC Codec, fps, frameSize, isColor
 
     print "Writing %d frames..." % len(frames)
@@ -613,8 +613,8 @@ class Videographer(Consultant):
 
   def _getDimensions(self, image=None):
     if image is None:
-      width = self.vid.get(cv2.cv.CV_CAP_PROP_FRAME_WIDTH)
-      height = self.vid.get(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT)
+      width = self.vid.get(cv2.CV_CAP_PROP_FRAME_WIDTH)
+      height = self.vid.get(cv2.CV_CAP_PROP_FRAME_HEIGHT)
       return int(height), int(width)
     else:
       return (len(image), len(image[0]))
