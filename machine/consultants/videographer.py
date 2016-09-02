@@ -1,4 +1,6 @@
 from consultant import Consultant
+from audiotech import AudioTech
+
 import cv2
 import sys
 import random
@@ -8,6 +10,85 @@ import time
 
 class Videographer(Consultant):
   
+  def autoOverlay(self, settings):
+    videos = os.listdir(settings["source"])
+    overlays = os.listdir(settings["overlays"])
+
+    for overlay in overlays:
+      if overlay[:1] == '.':
+        pass
+      else:
+        # Generate Overlay
+        print "Generating overlay with %s" % overlay
+        self.exclusionMap = self.generateOverlay('%s/%s' % (settings["overlays"], overlay))
+
+        for video in videos:
+          if video[:1] == '.':
+            pass
+          else:
+            # Prepare video settings and container
+            print "Processing video %s with overlay %s" % (video, overlay)
+            self.video("%s/%s" % (settings["source"], video))
+
+            destination = "%s/%s-%s" % (settings["output"], overlay, video)
+            func = getattr(self, settings["method"])
+
+            height, width = self._getDimensions() 
+            fourcc = cv2.cv.CV_FOURCC(*'mp4v')
+            fps = self.vid.get(cv2.cv.CV_CAP_PROP_FPS) * float(settings["speed"])
+
+            print "Creating video %s at %ffps" % (destination, fps)
+            v = cv2.VideoWriter(destination, fourcc, fps, (width, height))
+
+            # Process
+            moreFrames = True
+            while moreFrames:
+              image = self.readNextFrame()
+
+              if numpy.any(image):
+                frame = func(image)
+                v.write(frame)
+
+              else:
+                moreFrames = False
+                v.release()
+
+  def auto(self, settings, method="midlineVertical", audio=False):
+    # This def needs to be more pythonic but eh, it works.
+    videos = os.listdir(settings["source"])
+    
+    for video in videos:
+      if video[:1] == '.':
+        pass
+      else:
+        print "Processing video %s/%s" % (settings["source"], video)
+        self.video("%s/%s" % (settings["source"], video))
+
+        destination = "%s/%s" % (settings["output"], video)
+        func = getattr(self, method)
+
+        height, width = self._getDimensions() 
+        #fourcc = self.vid.get(cv2.cv.CV_CAP_PROP_FOURCC)
+        fourcc = cv2.cv.CV_FOURCC(*'mp4v')
+        fps = self.vid.get(cv2.cv.CV_CAP_PROP_FPS) * float(settings["speed"])
+
+        print "Creating video %s at %ffps" % (destination, fps)
+        v = cv2.VideoWriter(destination, fourcc, fps, (width, height))
+
+        moreFrames = True
+        while moreFrames:
+          image = self.readNextFrame()
+
+          if numpy.any(image):
+            frame = func(image)
+            v.write(frame)
+
+          else:
+            moreFrames = False
+            v.release()
+
+
+
   def midlineSwitch(self, image):
     """
     This plays well with width probably.
@@ -72,12 +153,17 @@ class Videographer(Consultant):
       numRows, numColumns = self._getDimensions(image)
 
       mid = numColumns / 2
+      fullRow = False
 
       for row in range(numRows - 1):
         color = self._getColor(image, (row, mid))
-        for column in range(numColumns - 1):
-          if column % 15 > 0 and row % 2 == 0:
-            image[row, column] = color
+
+        if row % 10 > 0:
+          image[row, 0:numColumns] = color
+        else:
+          for column in range(numColumns - 1):
+            if column % 10 > 0:
+              image[row, column] = color
 
     self._update_progress()
     return image
@@ -116,39 +202,55 @@ class Videographer(Consultant):
       for row in range(numRows - 1):
         color = self._getColor(image, (row, mid))
         for column in range(numColumns - 1):
-          if self.eMap.item(row, column) < 255:
+          if self.exclusionMap.item(row, column) == 255:
             image[row, column] = color
 
     self._update_progress()
     return image
 
-  def midlineHorizontal(self, image, width=0, exclusion=False):
+  def midlineHorizontal(self, image):
     """
     Takes a sample pixel from the midline of each row
     makes the row that color
     """
     if not image is None:
       numRows, numColumns = self._getDimensions(image)
-
+      dancerWidth = 10
       mid = numColumns / 2
+      dancerMid = self.prevDancerMid
+      moveRight = True
+
+      # decide if column will move left or right
+      if random.randint(0, 1) == 1:
+        moveRight = True if not moveRight else False
+        
+      if dancerMid + dancerWidth >= numColumns:
+        moveRight = False
+
+      if dancerMid - dancerWidth <= 0:
+        moveRight = True
+
+      # Target a column or access current column
+      if moveRight:
+        dancerMid = dancerMid + 10
+      else:
+        dancerMid = dancerMid - 10
+
 
       for row in range(numRows - 1):
-        if width > 0 and row % width == 0: # Every 5th row
-          color = self._getColor(image, (row, mid))
-          for i in range(width):
-            try:
-              image[row - i, 0:numColumns] = color
-              image[row + i, 0:numColumns] = color
-            except: # Yeah there'll be index errors. whatev.
-              pass
+        color = self._getColor(image, (row, mid))
+        image[row, 0:dancerMid - 10] = color
+        image[row, dancerMid + 10:numColumns] = color
 
+    self.prevDancerMid = dancerMid
     self._update_progress()
     return image
 
-  def auto(self, settings, method="midlineVertical"):
+  def audio(self, settings):
     # This def needs to be more pythonic but eh, it works.
     videos = os.listdir(settings["source"])
-    self.eMap = self.generateOverlay(cv2.imread('/Users/ekonetzni/Dropbox/code/the-machine/assets/rectangle-overlay-2.jpg'))
+    #self.exclusionMap = self.generateOverlay(cv2.imread('/Users/ekonetzni/Dropbox/code/the-machine/assets/rectangle-overlay-2.jpg'))
+    
     for video in videos:
       if video[:1] == '.':
         pass
@@ -157,41 +259,42 @@ class Videographer(Consultant):
         self.video("%s/%s" % (settings["source"], video))
 
         destination = "%s/%s" % (settings["output"], video)
-        func = getattr(self, method)
 
         height, width = self._getDimensions() 
-        #fourcc = self.vid.get(cv2.cv.CV_CAP_PROP_FOURCC)
-        fourcc = cv2.cv.CV_FOURCC(*'mp4v')
         fps = self.vid.get(cv2.cv.CV_CAP_PROP_FPS) * float(settings["speed"])
 
-        print "Creating video %s at %ffps" % (destination, fps)
-        v = cv2.VideoWriter(destination, fourcc, fps, (width, height))
+        # 44100 is the audio fps.
+        # so 44100 per {fps} frames.
 
+        notesPerFrame = 2
+        sampleRate = 44100
+
+        a = AudioTech()
+        a.beginRecording("%s.wav" % destination.split('.')[0])
 
         moreFrames = True
         while moreFrames:
           image = self.readNextFrame()
-          
-          if self.eMap is None and settings["overlay"] is True:
-            self.eMap = self.generateOverlay(image)
 
           if numpy.any(image):
-            frame = func(image)
-            v.write(frame)
+
+            lastNote = a.notes["c"]
+            if self.currentFrame % fps / notesPerFrame == 0 or self.currentFrame == 1:
+              a.write(a.staccato(image, sampleRate / notesPerFrame))
+
           else:
             moreFrames = False
-            v.release()
+            a.endRecording()
 
   def video(self, videoFile=False):
     """
     Sets the instance video. This is necessary
     for readNextFrame, etc.
     """
-    self.currentFrame = 0
-
     if videoFile:
       self.vid = cv2.VideoCapture(videoFile)
       self.numFrames = self.vid.get(cv2.cv.CV_CAP_PROP_FRAME_COUNT)
+      self.currentFrame = 0
     else:
       return self.vid
 
@@ -263,12 +366,12 @@ class Videographer(Consultant):
 
   # MODIFICATION METHODS
 
-  def generateOverlay(self, image):
+  def generateOverlay(self, imagePath):
     """
     Accepts an image, converts to grayscale then returns a 
     numpy array of the BW version.
     """
-    print "Generating map"
+    image = cv2.imread(imagePath)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     (threshold, im_bw) = cv2.threshold(gray, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
 
@@ -575,4 +678,5 @@ class Videographer(Consultant):
     Videographer
     """
     self.currentFrame = 0
-    self.eMap = None
+    self.exclusionMap = None
+    self.prevDancerMid = 0

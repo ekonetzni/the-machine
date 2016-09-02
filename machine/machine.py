@@ -79,8 +79,8 @@ class Machine(object):
             "source"    : self.config.get('settings', 'source'),
             "output"    : self.config.get('settings', 'output'),
             "speed"     : self.config.get('settings', 'speed'),
-            "overlay"   : self.config.get('settings', 'overlay'),
-            "method"    : self.config.get('settings', 'method')
+            "method"    : self.config.get('settings', 'method'),
+            "overlays"  : self.config.get('settings', 'overlays')
         }
 
         while True:
@@ -97,6 +97,12 @@ class Machine(object):
             elif self.state["action"] == "go":
                 v = Videographer()
                 v.auto(settings, method=settings["method"])
+            elif self.state["action"] == "audio":
+                v = Videographer()
+                v.audio(settings)
+            elif self.state["action"] == 'overlays':
+                v = Videographer()
+                v.autoOverlay(settings)
                 
     def devMode(self):
         while True:
