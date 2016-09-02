@@ -352,7 +352,7 @@ class Videographer(Consultant):
 
   def writeAllFrames(self, fileName, frames):
     height, width, channels = frames[0].shape
-    fourcc = cv2.FOURCC(*'mp4v')
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     v = cv2.VideoWriter(fileName, fourcc, 15, (width, height)) # filename, FOUR_CC Codec, fps, frameSize, isColor
 
     print "Writing %d frames..." % len(frames)
