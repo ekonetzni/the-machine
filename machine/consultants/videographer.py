@@ -33,7 +33,7 @@ class Videographer(Consultant):
             func = getattr(self, settings["method"])
 
             height, width = self._getDimensions() 
-            fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+            fourcc = cv2.VideoWriter_fourcc(*'mjpg')
             fps = self.vid.get(cv2.CAP_PROP_FPS) * float(settings["speed"])
 
             print "Creating video %s at %ffps" % (destination, fps)
@@ -68,7 +68,7 @@ class Videographer(Consultant):
 
         height, width = self._getDimensions() 
         #fourcc = self.vid.get(cv2.CAP_PROP_FOURCC)
-        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        fourcc = cv2.VideoWriter_fourcc(*'mjpg')
         fps = self.vid.get(cv2.CAP_PROP_FPS) * float(settings["speed"])
 
         print "Creating video %s at %ffps" % (destination, fps)
@@ -352,7 +352,7 @@ class Videographer(Consultant):
 
   def writeAllFrames(self, fileName, frames):
     height, width, channels = frames[0].shape
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    fourcc = cv2.VideoWriter_fourcc(*'mjpg')
     v = cv2.VideoWriter(fileName, fourcc, 15, (width, height)) # filename, FOUR_CC Codec, fps, frameSize, isColor
 
     print "Writing %d frames..." % len(frames)
