@@ -74,11 +74,11 @@ class Videographer(Consultant):
         fps = self.vid.get(cv2.CAP_PROP_FPS) * float(settings["speed"])
 
         if settings["twilio"]:
-          client = TwilioRestClient(settings["twilio"].sid, settings["twilio"].auth)
+          client = TwilioRestClient(settings["twilio"]["sid"], settings["twilio"]["auth"])
           message = client.messages.create(
-                      body="Beginning processing of video %s" % (destination),
-                      to=settings["twilio"].phone,   
-                      from_=settings["twilio"].phone)
+                      body="Completed processing of video %s" % (destination),
+                      to=settings["twilio"]["phone"],   
+                      from_=settings["twilio"]["phone"])
 
         print "Creating video %s at %ffps" % (destination, fps)
         v = cv2.VideoWriter(destination, fourcc, fps, (width, height))
@@ -95,11 +95,11 @@ class Videographer(Consultant):
             moreFrames = False
             v.release()
             if settings["twilio"]:
-              client = TwilioRestClient(settings["twilio"].sid, settings["twilio"].auth)
+              client = TwilioRestClient(settings["twilio"]["sid"], settings["twilio"]["auth"])
               message = client.messages.create(
                           body="Completed processing of video %s" % (destination),
-                          to=settings["twilio"].phone,   
-                          from_=settings["twilio"].phone)
+                          to=settings["twilio"]["phone"],   
+                          from_=settings["twilio"]["phone"])
 
 
 
