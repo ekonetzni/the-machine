@@ -292,7 +292,7 @@ class Videographer(Consultant):
     """
     if videoFile:
       self.vid = cv2.VideoCapture(videoFile)
-      self.numFrames = self.vid.get(cv2.CV_CAP_PROP_FRAME_COUNT)
+      self.numFrames = self.vid.get(cv2.cv.CV_CAP_PROP_FRAME_COUNT)
       self.currentFrame = 0
     else:
       return self.vid
