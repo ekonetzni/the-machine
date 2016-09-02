@@ -192,7 +192,9 @@ class Videographer(Consultant):
   def midlineExclusion(self, image):
     """
     Takes a sample pixel from the midline of each row
-    makes the row that color
+    makes the row that color. Supports exlusion maps (overlays), set through
+    self.exclusionMap
+    TODO: Take exclusionMap as an argument
     """
     if not image is None:
       numRows, numColumns = self._getDimensions(image)
@@ -202,8 +204,11 @@ class Videographer(Consultant):
       for row in range(numRows - 1):
         color = self._getColor(image, (row, mid))
         for column in range(numColumns - 1):
-          if self.exclusionMap.item(row, column) == 255:
+          if self.exclusionMap:
+            image[row, column] = color if self.exclusionMap.item(row, column) == 255
+          else:
             image[row, column] = color
+
 
     self._update_progress()
     return image
