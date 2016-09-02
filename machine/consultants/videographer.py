@@ -33,7 +33,7 @@ class Videographer(Consultant):
             func = getattr(self, settings["method"])
 
             height, width = self._getDimensions() 
-            fourcc = cv2.FOURCC(*'mp4v')
+            fourcc = cv2.VideoWriter_fourcc(*'mp4v')
             fps = self.vid.get(cv2.CAP_PROP_FPS) * float(settings["speed"])
 
             print "Creating video %s at %ffps" % (destination, fps)
@@ -68,7 +68,7 @@ class Videographer(Consultant):
 
         height, width = self._getDimensions() 
         #fourcc = self.vid.get(cv2.CAP_PROP_FOURCC)
-        fourcc = cv2.FOURCC(*'mp4v')
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         fps = self.vid.get(cv2.CAP_PROP_FPS) * float(settings["speed"])
 
         print "Creating video %s at %ffps" % (destination, fps)
