@@ -292,7 +292,7 @@ class Videographer(Consultant):
     """
     if videoFile:
       self.vid = cv2.VideoCapture(videoFile)
-      self.numFrames = self.vid.get(cv2.cv.CV_CAP_PROP_FRAME_COUNT)
+      self.numFrames = self.vid.get(cv2.CAP_PROP_FRAME_COUNT)
       self.currentFrame = 0
     else:
       return self.vid
@@ -613,8 +613,8 @@ class Videographer(Consultant):
 
   def _getDimensions(self, image=None):
     if image is None:
-      width = self.vid.get(cv2.cv.CV_CAP_PROP_FRAME_WIDTH)
-      height = self.vid.get(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT)
+      width = self.vid.get(cv2.CAP_PROP_FRAME_WIDTH)
+      height = self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT)
       return int(height), int(width)
     else:
       return (len(image), len(image[0]))
