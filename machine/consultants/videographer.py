@@ -204,7 +204,9 @@ class Videographer(Consultant):
         color = self._getColor(image, (row, mid))
         for column in range(numColumns - 1):
           if self.exclusionMap:
-            image[row, column] = color if self.exclusionMap.item(row, column) == 255
+            if self.exclusionMap.item(row, column) == 255:
+              image[row, column] = color
+              
           else:
             image[row, column] = color
 
