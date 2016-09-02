@@ -15,10 +15,16 @@ class Machine(object):
     and firing appropriate actions via the clerks.
     """
     def __init__(self, config_file):
+        # Machine settings
         self.config = ConfigParser.ConfigParser()
         path = config_file
         sys.stderr.write("Starting with config from %s\n" % path)
         self.config.read(path)
+
+        # Twilio API Settings
+        self.apiConfig = ConfigParser.ConfigParser()
+        self.apiConfig.read(self.config.get('settings', 'api_path'))
+
         # Settings
         self.prompt = self.config.get('general', 'prompt')
         
