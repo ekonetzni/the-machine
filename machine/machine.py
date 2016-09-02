@@ -49,12 +49,8 @@ class Machine(object):
         """
         The primary sim loop regardless of mode.
         """
-        try:
-            func = getattr(self, self.config.get('settings', 'mode'))
-            func()
-        except AttributeError as detail:
-            print "Machine has encountered a problem."
-            print detail
+        func = getattr(self, self.config.get('settings', 'mode'))
+        func()
 
     def imageMode(self):
         prompt = "image mode > "
