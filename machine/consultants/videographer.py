@@ -47,7 +47,7 @@ class Videographer(Consultant):
               image = self.readNextFrame()
 
               if numpy.any(image):
-                frame = func(image)
+                frame = func(image, useMap=True)
                 v.write(frame)
 
               else:
@@ -202,7 +202,7 @@ class Videographer(Consultant):
     return image
 
 
-  def midlineExclusion(self, image):
+  def midlineExclusion(self, image, useMap=False):
     """
     Takes a sample pixel from the midline of each row
     makes the row that color. Supports exlusion maps (overlays), set through
@@ -217,7 +217,7 @@ class Videographer(Consultant):
       for row in range(numRows - 1):
         color = self._getColor(image, (row, mid))
         for column in range(numColumns - 1):
-          if self.exclusionMap:
+          if useMap:
             if self.exclusionMap.item(row, column) == 255:
               image[row, column] = color
 
