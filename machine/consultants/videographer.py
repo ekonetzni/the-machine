@@ -77,7 +77,7 @@ class Videographer(Consultant):
           client = TwilioRestClient(settings["twilio"]["sid"], settings["twilio"]["auth"])
           message = client.messages.create(
                       body="Completed processing of video %s" % (destination),
-                      to=settings["twilio"]["phone"],   
+                      to=settings["twilio"]["to"],   
                       from_=settings["twilio"]["phone"])
 
         print "Creating video %s at %ffps" % (destination, fps)
@@ -98,7 +98,7 @@ class Videographer(Consultant):
               client = TwilioRestClient(settings["twilio"]["sid"], settings["twilio"]["auth"])
               message = client.messages.create(
                           body="Completed processing of video %s" % (destination),
-                          to=settings["twilio"]["phone"],   
+                          to=settings["twilio"]["to"],   
                           from_=settings["twilio"]["phone"])
 
 
