@@ -1,4 +1,5 @@
 # Stuff I use locally that needn't be tracked
+.DS_Store
 assets/
 temp/
 machine/consultants/keys.txt
@@ -57,5 +58,3 @@ docs/_build/
 
 # PyBuilder
 target/
-
-*.DS_Store
