@@ -1,5 +1,4 @@
 from consultant import Consultant
-from audiotech import AudioTech
 
 import cv2
 import sys
