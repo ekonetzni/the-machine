@@ -86,7 +86,8 @@ class Machine(object):
             "twilio"   : {
                 "sid"   : self.apiConfig.get('twilio', 'sid'), 
                 "auth"  : self.apiConfig.get('twilio', 'auth'), 
-                "phone" : self.apiConfig.get('twilio', 'phone')
+                "phone" : self.apiConfig.get('twilio', 'phone'), 
+                "to"    : self.apiConfig.get('twilio', 'to')
             }
         }
 
