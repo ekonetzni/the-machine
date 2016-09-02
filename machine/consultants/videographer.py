@@ -7,6 +7,8 @@ import os
 import numpy
 import time
 
+from twilio.rest import TwilioRestClient
+
 class Videographer(Consultant):
   
   def autoOverlay(self, settings):
@@ -71,6 +73,13 @@ class Videographer(Consultant):
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         fps = self.vid.get(cv2.CAP_PROP_FPS) * float(settings["speed"])
 
+        if settings.twilio:
+          client = TwilioRestClient(settings.twilio.sid, settings.twilio.auth)
+          message = client.messages.create(
+                      body="Beginning processing of video %s" % (destination),
+                      to=settings.twilio.phone,   
+                      from_=settings.twilio.phone)
+
         print "Creating video %s at %ffps" % (destination, fps)
         v = cv2.VideoWriter(destination, fourcc, fps, (width, height))
 
@@ -85,6 +94,12 @@ class Videographer(Consultant):
           else:
             moreFrames = False
             v.release()
+            if settings.twilio:
+              client = TwilioRestClient(settings.twilio.sid, settings.twilio.auth)
+              message = client.messages.create(
+                          body="Completed processing of video %s" % (destination),
+                          to=settings.twilio.phone,   
+                          from_=settings.twilio.phone)
 
 
 
@@ -206,7 +221,7 @@ class Videographer(Consultant):
           if self.exclusionMap:
             if self.exclusionMap.item(row, column) == 255:
               image[row, column] = color
-              
+
           else:
             image[row, column] = color
 

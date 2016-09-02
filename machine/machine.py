@@ -82,7 +82,12 @@ class Machine(object):
             "output"    : self.config.get('settings', 'output'),
             "speed"     : self.config.get('settings', 'speed'),
             "method"    : self.config.get('settings', 'method'),
-            "overlays"  : self.config.get('settings', 'overlays')
+            "overlays"  : self.config.get('settings', 'overlays'),
+            "twilio"   : {
+                "sid"   : self.apiConfig.get('twilio', 'sid'), 
+                "auth"  : self.apiConfig.get('twilio', 'auth'), 
+                "phone" : self.apiConfig.get('twilio', 'phone')
+            }
         }
 
         while True:
