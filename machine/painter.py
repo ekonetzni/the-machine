@@ -8,12 +8,11 @@ import time
 class Painter(object):
 
   def generate(self, sourceVideo):
-    sys.stdout.write('\n{0}\n'.format('Generating'))
     video = cv2.VideoCapture(sourceVideo)
     numFrames = video.get(cv2.CAP_PROP_FRAME_COUNT)
-    sys.stdout.write('\n{0}\n'.format('Reading'))
+
     image = self.readSpecific(video, numFrames / 2) # Middle frame of the video
-    sys.stdout.write('\n{0}\n'.format('Returning'))
+
     return self.midleHorizontal(image)
 
 
@@ -31,7 +30,6 @@ class Painter(object):
     Takes a sample pixel from the midline of each row
     makes the row that color.
     """
-    sys.stdout.write('\n{0}\n'.format('Midline Start'))
     if not image is None:
       numRows, numColumns = self._getDimensions(image)
 
@@ -40,7 +38,7 @@ class Painter(object):
       for row in range(numRows - 1):
         color = self._getColor(image, (row, mid))
         image[row, 0:numColumns] = color
-    sys.stdout.write('\n{0}\n'.format('Midline End'))
+
     return image
 
 
