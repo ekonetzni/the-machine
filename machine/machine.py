@@ -1,9 +1,9 @@
 import sys
 import ConfigParser
-import cv2
 import threading
 
-from consultants.videographer import Videographer
+from painter import Painter
+from communications import Twilio
 
 class Machine(object):
     """
@@ -15,14 +15,6 @@ class Machine(object):
         path = config_file
         sys.stderr.write("Starting with config from %s\n" % path)
         self.config.read(path)
-        # Settings
-        self.prompt = self.config.get('general', 'generation')
-        
-        self.actions = {}
-        # action mappings.
-        #for verb, control in config.items('actions'):
-        #    klass = getattr(controllers, control)
-        #    self.actions[verb] = klass()  
     
     def start(self):
         """
@@ -38,6 +30,9 @@ class Machine(object):
     def agent(self, settings):
         print "Agent starting"
 
+        sms = Twilio(self.config.get('settings', 'api_path'))
+        painter = Painter()
+
         while True:
             if self.shouldThreadQuit:
                 print "Agent terminated"
@@ -52,9 +47,11 @@ class Machine(object):
                     source = "%s/%s" % (settings["source"], video)
                     output = "%s/%s-%s" % (settings["output"], time.time(), video)
                     
-                    v = Videographer(source)
-                    func = getattr(v, rawInput[1])
-                    cv2.imwrite(path, func(v.readNextFrame(), exclusion=True))
+                    image = painter.generate(source)
+
+                    painter.writeImage(output, image)
+
+                    sms.send("Completed creation of %s." % output)
 
     def loop(self):
         prompt = "Generation %s -> " % self.config.get('general', 'generation')
