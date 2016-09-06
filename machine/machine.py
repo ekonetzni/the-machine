@@ -27,18 +27,18 @@ class Machine(object):
             func = getattr(self, self.config.get('settings', 'mode'))
             func()
         except AttributeError as detail:
-            print "Machine has encountered a problem."
-            print detail
+            self._message("Machine has encountered a problem.")
+            self._message(detail)
 
     def museAgent(self, settings):
-        print "Muse starting"
+        self._message("Muse starting")
 
         #sms = Twilio(self.config.get('settings', 'api_config'))
         #muse = Muse()
 
         while True:
             if self.shouldThreadQuit:
-                print "Muse terminated"
+                self._message("Muse terminated")
                 break
 
             # Check something for new queries
@@ -47,14 +47,14 @@ class Machine(object):
             # Download
 
     def painterAgent(self, settings):
-        print "Painter starting"
+        self._message("Painter starting")
 
         sms = Twilio(self.config.get('settings', 'api_config'))
         painter = Painter()
 
         while True:
             if self.shouldThreadQuit:
-                print "Painter terminated"
+                self._message("Painter terminated")
                 break
 
             videos = os.listdir(settings["source"])
@@ -117,4 +117,7 @@ class Machine(object):
                 painter.start()
                 muse.start()
 
+    def _message(self, message):
+        sys.stdout.write('\r{0}'.format(message))
+        sys.stdout.flush()
        
