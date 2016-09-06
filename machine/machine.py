@@ -100,7 +100,7 @@ class Machine(object):
         }
 
         while True:
-            action = raw_input(prompt).split()[0]
+            action = raw_input(prompt)
             painter = threading.Thread(target=self.painterAgent, args=(settings,))
             muse = threading.Thread(target=self.museAgent, args=(settings,))
 
@@ -118,6 +118,6 @@ class Machine(object):
                 muse.start()
 
     def _message(self, message):
-        sys.stdout.write('\r{0}'.format(message))
+        sys.stdout.write('{0}\n'.format(message))
         sys.stdout.flush()
        

@@ -18,7 +18,7 @@ class Painter(object):
 
   def readSpecific(self, video, requestedFrame):
     current = 0
-    while current < numFrames:
+    while current < requestedFrame:
       success, image = video.read()
       current += 1
 
