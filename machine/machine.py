@@ -118,6 +118,6 @@ class Machine(object):
                 muse.start()
 
     def _message(self, message):
-        sys.stdout.write('{0}\n'.format(message))
+        sys.stdout.write('\n{0}\n'.format(message))
         sys.stdout.flush()
        
