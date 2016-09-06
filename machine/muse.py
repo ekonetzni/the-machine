@@ -1,3 +1,5 @@
+import ConfigParser
+
 from apiclient.discovery import build
 from pytube import YouTube
 
@@ -7,7 +9,7 @@ class Muse(object):
     yt = YouTube(url)
     video = yt.filter('mp4')[-1] # This will get us the highest res version.
     try:
-      video.download(self.storageDir)
+      video.download(self.config.get('youtube', 'storage'))
       return True
     except:
       return False
@@ -31,5 +33,6 @@ class Muse(object):
 
     return urls
 
-  def __init__(self, storageDir):
-    self.storageDir = storageDir
+  def __init__(self, configPath):
+    self.config = ConfigParser.ConfigParser()
+    self.config.read(configPath)
