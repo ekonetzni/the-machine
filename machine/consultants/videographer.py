@@ -675,10 +675,12 @@ class Videographer(object):
     sys.stdout.flush()
     self.currentFrame += 1
 
-  def __init__(self):
+  def __init__(self, sourceVideo):
     """
     Videographer
     """
-    self.currentFrame = 0
     self.exclusionMap = None
-    self.prevDancerMid = 0
+    self.vid = cv2.VideoCapture(sourceVideo)
+    self.numFrames = self.vid.get(cv2.cv.CV_CAP_PROP_FRAME_COUNT)
+    self.currentFrame = 0
+

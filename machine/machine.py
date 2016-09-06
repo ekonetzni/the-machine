@@ -1,18 +1,14 @@
-import socket
-import thread
 import sys
 import ConfigParser
-import pickle
 import cv2
+import threading
 
-#from consultants.buyer import Buyer
 from consultants.videographer import Videographer
 
 class Machine(object):
     """
     This is a basic engine for running the machine.
-    It is responsible for handling user input, managing machine state
-    and firing appropriate actions via the clerks.
+    It is responsible for handling user input, and managing the process loop.
     """
     def __init__(self, config_file):
         self.config = ConfigParser.ConfigParser()
@@ -20,30 +16,13 @@ class Machine(object):
         sys.stderr.write("Starting with config from %s\n" % path)
         self.config.read(path)
         # Settings
-        self.prompt = self.config.get('general', 'prompt')
+        self.prompt = self.config.get('general', 'generation')
         
         self.actions = {}
         # action mappings.
         #for verb, control in config.items('actions'):
         #    klass = getattr(controllers, control)
-        #    self.actions[verb] = klass()
-    
-        if self._load_data():
-            pass
-        else:
-            try:     
-                # Application state
-                self.state = {
-                    "action"    : 'null',
-                    "message"   : []
-                }
-                #self._save_data()
-            except IOError:
-                pass
-        
-        #klass = getattr(models, config.get('general', 'model'))
-        #self.model = klass("generic","configpath")
-    
+        #    self.actions[verb] = klass()  
     
     def start(self):
         """
@@ -56,54 +35,49 @@ class Machine(object):
             print "Machine has encountered a problem."
             print detail
 
-    def imageMode(self):
-        prompt = "image mode > "
-        
-        while True:
-            rawInput = raw_input(prompt).split()
-            self.state["action"] = rawInput[0]
-            if self.state["action"] == "quit":
-                break
-            elif self.state["action"] == "go":
-                v = Videographer()
-                v.video(rawInput[2])
-                try:
-                    func = getattr(v, rawInput[1])
-                    cv2.imshow('image.jpg', func(v.readNextFrame(), exclusion=True))
-                except AttributeError as detail:
-                    print detail
+    def agent(self, settings):
+        print "Agent starting"
 
-    def videoMode(self):
-        prompt = "video mode >"
+        while True:
+            if self.shouldThreadQuit:
+                print "Agent terminated"
+                break
+
+            videos = os.listdir(settings["source"])
+
+            for video in videos:
+                if video[:1] == '.':
+                    pass
+                else:
+                    source = "%s/%s" % (settings["source"], video)
+                    output = "%s/%s-%s" % (settings["output"], time.time(), video)
+                    
+                    v = Videographer(source)
+                    func = getattr(v, rawInput[1])
+                    cv2.imwrite(path, func(v.readNextFrame(), exclusion=True))
+
+    def loop(self):
+        prompt = "Generation %s -> " % self.config.get('general', 'generation')
         settings = {
             "source"    : self.config.get('settings', 'source'),
             "output"    : self.config.get('settings', 'output'),
-            "speed"     : self.config.get('settings', 'speed'),
             "method"    : self.config.get('settings', 'method'),
-            "overlays"  : self.config.get('settings', 'overlays')
         }
 
         while True:
-            rawInput = raw_input(prompt).split()
-            self.state["action"] = rawInput[0]
-            if self.state["action"] == "quit":
-                break
-            elif self.state["action"] == "set":
-                print "Setting %s to %s" % (rawInput[1], rawInput[2])
-                settings[rawInput[1]] = rawInput[2]
-            elif self.state["action"] == "settings":
-                for setting, value in settings.iteritems():
-                    print "%s is set to %s" % (setting, value)
-            elif self.state["action"] == "go":
-                v = Videographer()
-                v.auto(settings, method=settings["method"])
-            elif self.state["action"] == "audio":
-                v = Videographer()
-                v.audio(settings)
-            elif self.state["action"] == 'overlays':
-                v = Videographer()
-                v.autoOverlay(settings)
+            action = raw_input(prompt).split()[0]
+            agent = threading.Thread(target=agent, args=(self,settings,))
 
+            if action == "quit":
+                self.shouldThreadQuit = True
+                
+                # Wait for threads to wrap up
+                while agent.isAlive():
+                    pass
+
+                break
+            elif action == "go":
+                agent.start()
 
 
 m = Machine("./config/machine.cfg")
