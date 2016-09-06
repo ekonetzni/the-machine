@@ -31,7 +31,7 @@ class Machine(object):
     def museAgent(self, settings):
         print "Muse starting"
 
-        sms = Twilio(self.config.get('settings', 'api_path'))
+        sms = Twilio(self.config.get('settings', 'api_config'))
         muse = Muse()
 
         while True:
@@ -47,7 +47,7 @@ class Machine(object):
     def painterAgent(self, settings):
         print "Painter starting"
 
-        sms = Twilio(self.config.get('settings', 'api_path'))
+        sms = Twilio(self.config.get('settings', 'api_config'))
         painter = Painter()
 
         while True:
@@ -99,8 +99,8 @@ class Machine(object):
 
         while True:
             action = raw_input(prompt).split()[0]
-            painter = threading.Thread(target=painterAgent, args=(self,settings,))
-            muse = threading.Thread(target=museAgent, args=(self, settings,))
+            painter = threading.Thread(target=self.painterAgent, args=(settings,))
+            muse = threading.Thread(target=self.museAgent, args=(settings,))
 
             if action == "quit":
                 self.shouldThreadQuit = True
@@ -111,7 +111,7 @@ class Machine(object):
 
                 break
             elif action == "go":
-                agent.start()
+                painter.start()
                 muse.start()
 
        
