@@ -111,6 +111,7 @@ class Machine(object):
 
                 break
             elif action == "go":
+                self.shouldThreadQuit = False
                 painter.start()
                 muse.start()
 
