@@ -78,7 +78,4 @@ class Machine(object):
                 break
             elif action == "go":
                 agent.start()
-
-
-m = Machine("./config/machine.cfg")
-m.start()          
+       
