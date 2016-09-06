@@ -3,6 +3,7 @@ import ConfigParser
 import threading
 
 from painter import Painter
+from muse import Muse
 from communications import Twilio
 
 class Machine(object):
@@ -27,15 +28,31 @@ class Machine(object):
             print "Machine has encountered a problem."
             print detail
 
-    def agent(self, settings):
-        print "Agent starting"
+    def museAgent(self, settings):
+        print "Muse starting"
+
+        sms = Twilio(self.config.get('settings', 'api_path'))
+        muse = Muse()
+
+        while True:
+            if self.shouldThreadQuit:
+                print "Muse terminated"
+                break
+
+            # Check something for new queries
+            #urls = muse.search()
+            # Search
+            # Download
+
+    def painterAgent(self, settings):
+        print "Painter starting"
 
         sms = Twilio(self.config.get('settings', 'api_path'))
         painter = Painter()
 
         while True:
             if self.shouldThreadQuit:
-                print "Agent terminated"
+                print "Painter terminated"
                 break
 
             videos = os.listdir(settings["source"])
@@ -51,6 +68,8 @@ class Machine(object):
 
                     painter.writeImage(output, image)
 
+                    os.remove(source)
+
                     sms.send("Completed creation of %s." % output)
 
     def loop(self):
@@ -63,16 +82,19 @@ class Machine(object):
 
         while True:
             action = raw_input(prompt).split()[0]
-            agent = threading.Thread(target=agent, args=(self,settings,))
+            painter = threading.Thread(target=painterAgent, args=(self,settings,))
+            muse = threading.Thread(target=museAgent, args=(self, settings,))
 
             if action == "quit":
                 self.shouldThreadQuit = True
                 
                 # Wait for threads to wrap up
-                while agent.isAlive():
+                while painter.isAlive() or muse.isAlive():
                     pass
 
                 break
             elif action == "go":
                 agent.start()
+                muse.start()
+
        

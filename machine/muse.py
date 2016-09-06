@@ -1,8 +1,7 @@
-from consultant import Consultant
 from apiclient.discovery import build
 from pytube import YouTube
 
-class Buyer(Consultant):
+class Muse(object):
 
   def download(self, url):
     yt = YouTube(url)
