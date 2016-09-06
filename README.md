@@ -1,3 +1,3 @@
-# the-machine
+# the-machine Generation 1
 
-The machine is a mechanism for making art. Modeled after a modern institutionalized beauracracy.
+The machine is a mechanism for making art in an industrial manner.

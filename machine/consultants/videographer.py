@@ -1,6 +1,3 @@
-from consultant import Consultant
-from audiotech import AudioTech
-
 import cv2
 import sys
 import random
@@ -8,7 +5,7 @@ import os
 import numpy
 import time
 
-class Videographer(Consultant):
+class Videographer(object):
   
   def autoOverlay(self, settings):
     videos = os.listdir(settings["source"])
