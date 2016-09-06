@@ -9,7 +9,7 @@ class Painter(object):
 
   def generate(self, sourceVideo):
     video = cv2.VideoCapture(sourceVideo)
-    numFrames = video.get(cv2.cv.CV_CAP_PROP_FRAME_COUNT)
+    numFrames = video.get(cv2.CAP_PROP_FRAME_COUNT)
 
     image = self.readSpecific(video, numFrames / 2) # Middle frame of the video
 
@@ -48,8 +48,8 @@ class Painter(object):
 
   def _getDimensions(self, image=None):
     if image is None:
-      width = self.vid.get(cv2.cv.CV_CAP_PROP_FRAME_WIDTH)
-      height = self.vid.get(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT)
+      width = self.vid.get(cv2.CAP_PROP_FRAME_WIDTH)
+      height = self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT)
       return int(height), int(width)
     else:
       return (len(image), len(image[0]))

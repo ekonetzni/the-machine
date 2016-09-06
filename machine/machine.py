@@ -1,6 +1,8 @@
 import sys
+import os
 import ConfigParser
 import threading
+import time
 
 from painter import Painter
 from muse import Muse
@@ -31,8 +33,8 @@ class Machine(object):
     def museAgent(self, settings):
         print "Muse starting"
 
-        sms = Twilio(self.config.get('settings', 'api_config'))
-        muse = Muse()
+        #sms = Twilio(self.config.get('settings', 'api_config'))
+        #muse = Muse()
 
         while True:
             if self.shouldThreadQuit:
