@@ -72,6 +72,23 @@ class Machine(object):
 
                     sms.send("Completed creation of %s." % output)
 
+    def network(self):
+        # Create and bind our server socket.
+        server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server.bind((self.config.get('settings', 'host'), self.config.get('settings', 'port')))
+        server.listen(self.config.get('settings', 'agents'))
+        
+        while True:
+            sys.stderr.write("Waiting for connection...\n")
+            client, addr = server.accept()
+            sys.stderr.write("...connected from: %(address)s\n" % {'address' : addr})
+            try:
+                thread.start_new_thread(self.agent, (client, addr))
+            except Exception:
+                sys.stderr.write("Exploded!\n")
+        
+        server.close()
+
     def loop(self):
         prompt = "Generation %s -> " % self.config.get('general', 'generation')
         settings = {
