@@ -19,11 +19,11 @@ class Painter(object):
 
   def readSpecific(self, video, requestedFrame):
     current = 0
-    while current < requestedFrame:
+    while current <= requestedFrame:
       success, image = video.read()
       current += 1
 
-    return video.read()
+    return image
 
 
   def midleHorizontal(self, image):
