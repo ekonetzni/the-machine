@@ -64,7 +64,7 @@ class Machine(object):
                     pass
                 else:
                     source = "%s/%s" % (settings["source"], video)
-                    output = "%s/%s-%s" % (settings["output"], time.time(), video)
+                    output = "%s/%s-%s.jpg" % (settings["output"], time.time(), video)
                     
                     image = painter.generate(source)
 
