@@ -2,7 +2,7 @@ import ConfigParser
 
 from twilio.rest import TwilioRestClient
 
-def Twilio(object):
+class Twilio(object):
 
     def send(self, body):
         client = TwilioRestClient(
