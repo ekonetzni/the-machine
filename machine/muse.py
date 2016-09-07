@@ -14,13 +14,13 @@ class Muse(object):
     except:
       return False
 
-  def search(self, key, query, maxResults):
+  def search(self, query, maxResults):
     """
     Search youtube and return a list of URLs
     for matched videos.
     """
     urls = []
-    yt = build("youtube", "v3", developerKey=key)
+    yt = build("youtube", "v3", developerKey=self.config.get('youtube', 'key'))
     results = yt.search().list(
       q=query, 
       part="id,snippet", 

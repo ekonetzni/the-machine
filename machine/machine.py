@@ -33,18 +33,30 @@ class Machine(object):
     def museAgent(self, settings):
         self._message("Muse starting")
 
-        #sms = Twilio(self.config.get('settings', 'api_config'))
-        #muse = Muse()
+        sms = Twilio(self.config.get('settings', 'api_config'))
+        muse = Muse(self.config.get('settings', 'api_config'))
 
-        while True:
-            if self.shouldThreadQuit:
-                self._message("Muse terminated")
-                break
-
+        while True and not self.shouldThreadQuit:
             # Check something for new queries
-            #urls = muse.search()
-            # Search
-            # Download
+            # WHERE DO THE SEARCH TERMS COME FROM
+            queries = ['animals', 'alan ricther', 'insane clown posse']
+
+            for q in queries:
+                if self.shouldThreadQuit:
+                    break
+
+                urls = muse.search(q, 6)
+                for u in urls:
+                    if self.shouldThreadQuit:
+                        break
+                        
+                    try:
+                        muse.download(u)
+                    except Exception as e:
+                        self._message('Problem downloading something')
+
+        self._message("Muse terminated")
+        return
 
     def painterAgent(self, settings):
         self._message("Painter starting")
@@ -52,14 +64,13 @@ class Machine(object):
         sms = Twilio(self.config.get('settings', 'api_config'))
         painter = Painter()
 
-        while True:
-            if self.shouldThreadQuit:
-                self._message("Painter terminated")
-                break
-
+        while True and not self.shouldThreadQuit:
             videos = os.listdir(settings["source"])
 
             for video in videos:
+                if self.shouldThreadQuit:
+                    break
+
                 if video[:1] == '.':
                     pass
                 else:
@@ -74,22 +85,8 @@ class Machine(object):
 
                     sms.send("Completed creation of %s." % output)
 
-    def network(self):
-        # Create and bind our server socket.
-        server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server.bind((self.config.get('settings', 'host'), self.config.get('settings', 'port')))
-        server.listen(self.config.get('settings', 'agents'))
-        
-        while True:
-            sys.stderr.write("Waiting for connection...\n")
-            client, addr = server.accept()
-            sys.stderr.write("...connected from: %(address)s\n" % {'address' : addr})
-            try:
-                thread.start_new_thread(self.agent, (client, addr))
-            except Exception:
-                sys.stderr.write("Exploded!\n")
-        
-        server.close()
+        self._message("Painter quitting")
+        return
 
     def loop(self):
         prompt = "Generation %s -> " % self.config.get('general', 'generation')
