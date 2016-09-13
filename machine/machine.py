@@ -50,8 +50,8 @@ class Machine(object):
                         break
                         
                     try:
-                        time.sleep(60*30) # Sleep for 30 minutes between videos
                         muse.download(u)
+                        time.sleep(60*30) # Sleep for 30 minutes between videos
                     except Exception as e:
                         self._message('Problem downloading something')
 
