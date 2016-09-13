@@ -3,6 +3,7 @@ import os
 import ConfigParser
 import threading
 import time
+import dropbox
 
 from painter import Painter
 from muse import Muse
@@ -74,10 +75,13 @@ class Machine(object):
                 else:
                     source = "%s/%s" % (settings["source"], video)
                     output = "%s/%s-%s.jpg" % (settings["output"], time.time(), video)
-                    
+                    lockFile = "%s/%s-%s.jpg.lck" % (settings["output"], time.time(), video)
+
                     image = painter.generate(source)
 
+                    open(lockFile, 'a').close()
                     painter.writeImage(output, image)
+                    os.remove(lockFile)
 
                     os.remove(source)
 
@@ -86,6 +90,31 @@ class Machine(object):
         self._message("Painter quitting")
         return
 
+    def galleryAgent(self, settings):
+        self._message("Gallery starting")
+
+        apiConfig = ConfigParser.ConfigParser()
+        apiConfig.read(self.config.get('settings', 'api_config'))
+        dbox = dropbox.Dropbox(apiConfig.get('dropbox', 'token'))
+
+        while True and not self.shouldThreadQuit:
+            images = os.listdir(settings['output'])
+
+            for image in images:
+                if self.shouldThreadQuit:
+                    break
+
+                fullPath = '%s/%s' % (settings['output'], image)
+                lockPath = '%s/%s.lck' % (settings['output'], image)
+
+                if image[:1] == '.' or image[-4:] == '.lck' or os.path.exists(lockPath):
+                    pass
+                else:
+                    f = open(fullPath, 'r')
+                    dbox.files_upload(f, '/The Machine/%s' % image)
+                    f.close()
+
+
     def loop(self):
         prompt = "Generation %s -> " % self.config.get('general', 'generation')
         settings = {
@@ -93,17 +122,18 @@ class Machine(object):
             "output"    : self.config.get('settings', 'output'),
             "method"    : self.config.get('settings', 'method'),
         }
+        painter = threading.Thread(target=self.painterAgent, args=(settings,))
+        muse = threading.Thread(target=self.museAgent, args=(settings,))
+        gallery = threading.Thread(target=self.galleryAgent, args=(settings,))
 
         while True:
             action = raw_input(prompt)
-            painter = threading.Thread(target=self.painterAgent, args=(settings,))
-            muse = threading.Thread(target=self.museAgent, args=(settings,))
 
             if action == "quit":
                 self.shouldThreadQuit = True
                 
                 # Wait for threads to wrap up
-                while painter.isAlive() or muse.isAlive():
+                while painter.isAlive() or muse.isAlive() or gallery.isAlive():
                     pass
 
                 break
@@ -111,6 +141,7 @@ class Machine(object):
                 self.shouldThreadQuit = False
                 painter.start()
                 muse.start()
+                gallery.start()
 
     def _message(self, message):
         sys.stdout.write('\n{0}\n'.format(message))
