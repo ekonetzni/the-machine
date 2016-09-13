@@ -23,7 +23,7 @@ class Muse(object):
     storage = self.config.get('youtube', 'storage')
     yt = YouTube(url)
     video = yt.filter('mp4')[-1] # This will get us the highest res version.
-    lockFile = '%s/%s.lck' % (storage, video.filename)
+    lockFile = '%s/%s.mp4.lck' % (storage, video.filename)
 
     try:
       open(lockFile, 'a').close()
