@@ -45,13 +45,19 @@ class Machine(object):
                     break
 
                 urls = muse.search(q, 6)
+                throttle = 0
+
                 for u in urls:
                     if self.shouldThreadQuit:
                         break
-                        
+
                     try:
                         muse.download(u)
-                        time.sleep(60*30) # Sleep for 30 minutes between videos
+                        for n in range(1,10000000000): 
+                            # Hilariously poorly implemented throttling
+                            if 1 == 1:
+                                pass
+
                     except Exception as e:
                         self._message('Problem downloading something')
 
