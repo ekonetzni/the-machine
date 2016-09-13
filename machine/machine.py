@@ -37,9 +37,7 @@ class Machine(object):
         muse = Muse(self.config.get('settings', 'api_config'))
 
         while True and not self.shouldThreadQuit:
-            # Check something for new queries
-            # WHERE DO THE SEARCH TERMS COME FROM
-            queries = ['animals', 'alan ricther', 'insane clown posse']
+            queries = muse.getQueries(self.config.get('feeds', 'urls').split(','))
 
             for q in queries:
                 if self.shouldThreadQuit:
@@ -71,7 +69,7 @@ class Machine(object):
                 if self.shouldThreadQuit:
                     break
 
-                if video[:1] == '.':
+                if video[:1] == '.' or video[-4:] == '.lck' or os.path.exists('%s/%s.lck' % (settings['source'], video)):
                     pass
                 else:
                     source = "%s/%s" % (settings["source"], video)
