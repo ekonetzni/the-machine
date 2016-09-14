@@ -51,12 +51,10 @@ class Machine(object):
                         break
 
                     try:
+                        self._message('Muse beginning download.')
                         muse.download(u)
-                        for n in range(1,10000000000): 
-                            # Hilariously poorly implemented throttling
-                            if 1 == 1:
-                                pass
-
+                        self._message('Muse going to sleep.')
+                        time.sleep(60*60) # I think this should only block Muse agent, but it might block the whole process on device.
                     except Exception as e:
                         self._message('Problem downloading something')
 
@@ -82,6 +80,7 @@ class Machine(object):
                     output = "%s/%s-%s.jpg" % (settings["output"], time.time(), video)
                     lockFile = "%s/%s-%s.jpg.lck" % (settings["output"], time.time(), video)
 
+                    self._message("Painting...")
                     image = painter.generate(source)
 
                     open(lockFile, 'a').close()
