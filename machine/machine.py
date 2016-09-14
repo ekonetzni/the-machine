@@ -34,7 +34,6 @@ class Machine(object):
     def museAgent(self, settings):
         self._message("Muse starting")
 
-        sms = Twilio(self.config.get('settings', 'api_config'))
         muse = Muse(self.config.get('settings', 'api_config'))
 
         while True and not self.shouldThreadQuit:
@@ -67,7 +66,6 @@ class Machine(object):
     def painterAgent(self, settings):
         self._message("Painter starting")
 
-        sms = Twilio(self.config.get('settings', 'api_config'))
         painter = Painter()
 
         while True and not self.shouldThreadQuit:
@@ -91,8 +89,6 @@ class Machine(object):
                     os.remove(lockFile)
 
                     os.remove(source)
-
-                    sms.send("Completed creation of %s." % output)
 
         self._message("Painter quitting")
         return
