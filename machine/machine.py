@@ -118,6 +118,7 @@ class Machine(object):
                     f = open(fullPath, 'r')
                     dbox.files_upload(f, '/%s/%s' % (apiConfig.get('dropbox', 'directory'), image))
                     f.close()
+                    os.rename(fullPath, '%s/%s' % (settings['storage'], image))
 
 
     def loop(self):
@@ -126,6 +127,7 @@ class Machine(object):
             "source"    : self.config.get('settings', 'source'),
             "output"    : self.config.get('settings', 'output'),
             "method"    : self.config.get('settings', 'method'),
+            'storage'   : self.config.get('settings', 'storage')
         }
         painter = threading.Thread(target=self.painterAgent, args=(settings,))
         muse = threading.Thread(target=self.museAgent, args=(settings,))
