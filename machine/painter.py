@@ -36,7 +36,7 @@ class Painter(object):
       mid = numColumns / 2
 
       for row in range(numRows - 1):
-        color = self._getColor(image, (row, mid))
+        color = self._getColor(image, (row, mid), invert=True)
         image[row, 0:numColumns] = color
 
     return image
@@ -55,12 +55,15 @@ class Painter(object):
       return (len(image), len(image[0]))
 
 
-  def _getColor(self, image, index):
+  def _invertColor(self, color):
+    return map(lambda x: 255 - x, color)
+
+  def _getColor(self, image, index, invert=False):
     color = []
     color.append(image.item(index[0], index[1], 0))
     color.append(image.item(index[0], index[1], 1))
     color.append(image.item(index[0], index[1], 2))
-    return color
+    return self._invertColor(color) if invert else color
 
 
   def __init__(self):
