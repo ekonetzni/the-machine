@@ -114,7 +114,7 @@ class Machine(object):
                 else:
                     self._message("Gallery uploading %s." % fullPath)
                     f = open(fullPath, 'r')
-                    dbox.files_upload(f, '%s/%s' % (apiConfig.get('dropbox', 'directory'), image))
+                    dbox.files_upload(f, '/%s/%s' % (apiConfig.get('dropbox', 'directory'), image))
                     f.close()
 
 
@@ -144,6 +144,9 @@ class Machine(object):
                 self.shouldThreadQuit = False
                 painter.start()
                 muse.start()
+                gallery.start()
+            elif action == "gallery":
+                self.shouldThreadQuit = False
                 gallery.start()
 
     def _message(self, message):
