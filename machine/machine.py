@@ -51,12 +51,15 @@ class Machine(object):
                         break
 
                     try:
-                        self._message('Muse beginning download.')
                         muse.download(u)
-                        self._message('Muse going to sleep.')
-                        time.sleep(60*60) # I think this should only block Muse agent, but it might block the whole process on device.
                     except Exception as e:
                         self._message('Problem downloading something')
+
+                    for n in range(0,30):
+                        if self.shouldThreadQuit:
+                            break
+                        
+                        time.sleep(1) # lol xD
 
         self._message("Muse terminated")
         return
@@ -112,7 +115,6 @@ class Machine(object):
                 if image[:1] == '.' or image[-4:] == '.lck' or os.path.exists(lockPath):
                     pass
                 else:
-                    self._message("Gallery uploading %s." % fullPath)
                     f = open(fullPath, 'r')
                     dbox.files_upload(f, '/%s/%s' % (apiConfig.get('dropbox', 'directory'), image))
                     f.close()
