@@ -112,8 +112,9 @@ class Machine(object):
                 if image[:1] == '.' or image[-4:] == '.lck' or os.path.exists(lockPath):
                     pass
                 else:
+                    self._message("Gallery uploading %s." % fullPath)
                     f = open(fullPath, 'r')
-                    dbox.files_upload(f, '/The Machine/%s' % image)
+                    dbox.files_upload(f, '%s/%s' % (apiConfig.get('dropbox', 'directory'), image))
                     f.close()
 
 
