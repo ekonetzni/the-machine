@@ -4,6 +4,7 @@ import random
 import os
 import numpy
 import time
+import random
 
 class Painter(object):
 
@@ -11,7 +12,8 @@ class Painter(object):
     video = cv2.VideoCapture(sourceVideo)
     numFrames = video.get(cv2.CAP_PROP_FRAME_COUNT)
 
-    image = self.readSpecific(video, numFrames / 2) # Middle frame of the video
+    #image = self.readSpecific(video, random.randint(1,numFrames))
+    success, image = video.read()
 
     return self.midleHorizontal(image)
 
@@ -34,9 +36,9 @@ class Painter(object):
     numRows, numColumns = self._getDimensions(source)
     mid = numColumns / 2
     factor = int(_longEdge / numRows)
-    image = [numRows * factor, numColumns * factor]
+    image = numpy.empty([numRows * factor, numColumns * factor, 3], numpy.uint8)
 
-    for n in range(numRows * factor):
+    for n in range((numRows * factor) - 1):
       color = self._getColor(source, (n, mid), invert=True)
       startRow = n * factor
       endRow = startRow + factor

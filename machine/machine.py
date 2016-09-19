@@ -52,9 +52,14 @@ class Machine(object):
 
                     try:
                         muse.download(u)
-                        time.sleep(30) # This does not work perfectly, but it works.
                     except Exception as e:
                         self._message('Problem downloading something')
+
+                    for n in range(0,30*60):
+                        if self.shouldThreadQuit:
+                            break
+                        
+                            time.sleep(1) # lol xD
 
         self._message("Muse terminated")
         return
