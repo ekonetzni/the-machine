@@ -25,19 +25,23 @@ class Painter(object):
     return image
 
 
-  def midleHorizontal(self, image):
+  def midleHorizontal(self, source):
     """
     Takes a sample pixel from the midline of each row
     makes the row that color.
     """
-    if not image is None:
-      numRows, numColumns = self._getDimensions(image)
+    _longEdge = 10800
+    numRows, numColumns = self._getDimensions(source)
+    mid = numColumns / 2
+    factor = int(_longEdge / numRows)
+    image = [numRows * factor, numColumns * factor]
 
-      mid = numColumns / 2
+    for n in range(numRows * factor):
+      color = self._getColor(source, (n, mid), invert=True)
+      startRow = n * factor
+      endRow = startRow + factor
 
-      for row in range(numRows - 1):
-        color = self._getColor(image, (row, mid), invert=True)
-        image[row, 0:numColumns] = color
+      source[startRow:endRow, 0:(numColumns * factor)] = color
 
     return image
 

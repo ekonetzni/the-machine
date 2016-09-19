@@ -115,7 +115,6 @@ class Machine(object):
                     f.close()
                     os.rename(fullPath, '%s/%s' % (settings['storage'], image))
 
-
     def loop(self):
         prompt = "Generation %s -> " % self.config.get('general', 'generation')
         settings = {
@@ -147,6 +146,13 @@ class Machine(object):
             elif action == "gallery":
                 self.shouldThreadQuit = False
                 gallery.start()
+            elif action == "painter":
+                self.shouldThreadQuit = False
+                painter.start()
+            elif action == "muse":
+                self.shouldThreadQuit = False
+                muse.start()
+
 
     def _message(self, message):
         sys.stdout.write('\n{0}\n'.format(message))
