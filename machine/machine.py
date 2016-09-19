@@ -55,7 +55,7 @@ class Machine(object):
                     except Exception as e:
                         self._message('Problem downloading something')
 
-                    for n in range(0,30):
+                    for n in range(0,30*60):
                         if self.shouldThreadQuit:
                             break
                         
