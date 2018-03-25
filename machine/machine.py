@@ -122,9 +122,10 @@ class Machine(object):
                 if image[:1] == '.' or image[-4:] == '.lck' or os.path.exists(lockPath):
                     pass
                 else:
-                    f = open(fullPath, 'r')
-                    dbox.files_upload(f, '/%s/%s' % (apiConfig.get('dropbox', 'directory'), image))
-                    f.close()
+                    with open(fullPath, 'rb') as f:
+                        data = f.read()
+                        dbox.files_upload(data, '/%s/%s' % (apiConfig.get('dropbox', 'directory'), image))
+                        
                     os.rename(fullPath, '%s/%s' % (settings['storage'], image))
 
 
