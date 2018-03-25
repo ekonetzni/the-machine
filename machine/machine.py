@@ -125,7 +125,7 @@ class Machine(object):
                     with open(fullPath, 'rb') as f:
                         data = f.read()
                         dbox.files_upload(data, '/%s/%s' % (apiConfig.get('dropbox', 'directory'), image))
-                        
+
                     os.rename(fullPath, '%s/%s' % (settings['storage'], image))
 
 
@@ -156,7 +156,7 @@ class Machine(object):
                 self.shouldThreadQuit = False
                 painter.start()
                 muse.start()
-                #gallery.start()
+                gallery.start()
             elif action == "gallery":
                 self.shouldThreadQuit = False
                 gallery.start()
