@@ -7,7 +7,6 @@ import dropbox
 
 from painter import Painter
 from muse import Muse
-from communications import Twilio
 
 class Machine(object):
     """
@@ -27,9 +26,10 @@ class Machine(object):
         try:
             func = getattr(self, self.config.get('settings', 'mode'))
             func()
-        except AttributeError as detail:
-            self._message("Machine has encountered a problem.")
-            self._message(detail)
+        except KeyboardInterrupt as e:
+            self._message("Interrupt detected. Stopping threads...")
+            self._message(e)
+            self.shouldThreadQuit = True
 
     def museAgent(self, settings):
         self._message("Muse starting")
@@ -40,6 +40,8 @@ class Machine(object):
             queries = muse.getQueries(self.config.get('feeds', 'urls').split(','))
 
             for q in queries:
+                self._message('Querying for %s' % q)
+
                 if self.shouldThreadQuit:
                     break
 
@@ -50,16 +52,20 @@ class Machine(object):
                     if self.shouldThreadQuit:
                         break
 
+                    self._message('Downloading %s' % u)
+
                     try:
                         muse.download(u)
                     except Exception as e:
-                        self._message('Problem downloading something')
+                        self._message(e)
 
-                    for n in range(0,30*60):
+                    for n in range(0,30):
                         if self.shouldThreadQuit:
                             break
                         
                         time.sleep(1) # lol xD
+
+                    self._message('%s finished Downloading' % u)
 
         self._message("Muse terminated")
         return
@@ -91,6 +97,7 @@ class Machine(object):
                     os.remove(lockFile)
 
                     os.remove(source)
+                    self._message("...Completed %s." % output)
 
         self._message("Painter quitting")
         return
@@ -148,7 +155,7 @@ class Machine(object):
                 self.shouldThreadQuit = False
                 painter.start()
                 muse.start()
-                gallery.start()
+                #gallery.start()
             elif action == "gallery":
                 self.shouldThreadQuit = False
                 gallery.start()

@@ -18,19 +18,26 @@ class Muse(object):
         
     return queries
 
-
   def download(self, url):
     storage = self.config.get('youtube', 'storage')
     yt = YouTube(url)
-    video = yt.filter('mp4')[-1] # This will get us the highest res version.
-    lockFile = '%s/%s.mp4.lck' % (storage, video.filename)
+    video = yt.streams \
+      .filter(file_extension='webm') \
+      .order_by('resolution') \
+      .desc() \
+      .first()
 
-    try:
-      open(lockFile, 'a').close()
-      video.download(storage)
-      os.remove(lockFile)
-      return True
-    except:
+    if video:
+      lockFile = '%s/%s.lck' % (storage, video.default_filename)
+
+      try:
+        open(lockFile, 'a').close()
+        video.download(storage)
+        os.remove(lockFile)
+        return True
+      except:
+        return False
+    else:
       return False
 
   def search(self, query, maxResults):
