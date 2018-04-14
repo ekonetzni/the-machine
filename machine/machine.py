@@ -111,7 +111,7 @@ class Machine(object):
         apiConfig.read(self.config.get('settings', 'api_config'))
 
         url = apiConfig.get('machine-web', 'create_url')
-        secret = apiConfig.get('machine-web', 'token')
+        secret = apiConfig.get('machine-web', 'secret')
 
         dbox = dropbox.Dropbox(apiConfig.get('dropbox', 'token'))
 
@@ -136,7 +136,9 @@ class Machine(object):
                         requests.post(url, json={'name': name, 'data': data}, headers={'X-Machine-Auth': secret})
 
                         dbox.files_upload(data, '/%s/%s' % (apiConfig.get('dropbox', 'directory'), image))
-                        
+                    
+                    self._message("Sent %s to the gallery." % image)
+
                     os.rename(fullPath, '%s/%s' % (settings['storage'], image))
 
 
