@@ -137,6 +137,8 @@ class Machine(object):
 
                         dbox.files_upload(data, '/%s/%s' % (apiConfig.get('dropbox', 'directory'), image))
 
+                    self._message("Sent %s to the gallery." % image)
+                    
                     os.rename(fullPath, '%s/%s' % (settings['storage'], image))
 
 
