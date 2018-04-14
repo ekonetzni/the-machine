@@ -4,6 +4,8 @@ import ConfigParser
 import threading
 import time
 import dropbox
+import base64
+import requests
 
 from painter import Painter
 from muse import Muse
@@ -107,6 +109,10 @@ class Machine(object):
 
         apiConfig = ConfigParser.ConfigParser()
         apiConfig.read(self.config.get('settings', 'api_config'))
+
+        url = apiConfig.get('machine-web', 'create_url')
+        secret = apiConfig.get('machine-web', 'token')
+
         dbox = dropbox.Dropbox(apiConfig.get('dropbox', 'token'))
 
         while True and not self.shouldThreadQuit:
@@ -124,6 +130,11 @@ class Machine(object):
                 else:
                     with open(fullPath, 'rb') as f:
                         data = f.read()
+                        b64 = base64.b64encode(data)
+                        
+                        name = image.split('-')[1]
+                        requests.post(url, json={'name': name, 'data': data}, headers={'X-Machine-Auth': secret})
+
                         dbox.files_upload(data, '/%s/%s' % (apiConfig.get('dropbox', 'directory'), image))
                         
                     os.rename(fullPath, '%s/%s' % (settings['storage'], image))
