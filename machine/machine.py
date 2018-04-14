@@ -113,7 +113,7 @@ class Machine(object):
         url = apiConfig.get('machine-web', 'create_url')
         secret = apiConfig.get('machine-web', 'token')
 
-        dbox = dropbox.Dropbox(apiConfig.get('dropbox', 'token'))
+        dbox = dropbox.Dropbox(apiConfig.get('dropbox', 'secret'))
 
         while True and not self.shouldThreadQuit:
             images = os.listdir(settings['output'])
