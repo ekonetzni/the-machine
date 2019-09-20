@@ -1,4 +1,4 @@
-import ConfigParser
+import configparser
 
 from twilio.rest import TwilioRestClient
 
@@ -17,5 +17,5 @@ class Twilio(object):
                 )
 
     def __init__(self, configPath):
-        self.config = ConfigParser.ConfigParser()
+        self.config = configparser.ConfigParser()
         self.config.read(configPath)

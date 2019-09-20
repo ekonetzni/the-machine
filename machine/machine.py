@@ -1,13 +1,12 @@
 import sys
 import os
-import ConfigParser
+import configparser
 import threading
 import time
 import dropbox
 
-from painter import Painter
-from muse import Muse
-from communications import Twilio
+from .painter import Painter
+from .muse import Muse
 
 class Machine(object):
     """
@@ -15,7 +14,7 @@ class Machine(object):
     It is responsible for handling user input, and managing the process loop.
     """
     def __init__(self, config_file):
-        self.config = ConfigParser.ConfigParser()
+        self.config = configparser.ConfigParser()
         path = config_file
         sys.stderr.write("Starting with config from %s\n" % path)
         self.config.read(path)
@@ -98,7 +97,7 @@ class Machine(object):
     def galleryAgent(self, settings):
         self._message("Gallery starting")
 
-        apiConfig = ConfigParser.ConfigParser()
+        apiConfig = configparser.ConfigParser()
         apiConfig.read(self.config.get('settings', 'api_config'))
         dbox = dropbox.Dropbox(apiConfig.get('dropbox', 'token'))
 
@@ -134,7 +133,7 @@ class Machine(object):
         gallery = threading.Thread(target=self.galleryAgent, args=(settings,))
 
         while True:
-            action = raw_input(prompt)
+            action = input(prompt)
 
             if action == "quit":
                 self.shouldThreadQuit = True

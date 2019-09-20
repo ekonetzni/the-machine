@@ -1,4 +1,4 @@
-import ConfigParser
+import configparser
 import feedparser
 import os
 
@@ -53,5 +53,5 @@ class Muse(object):
     return urls
 
   def __init__(self, configPath):
-    self.config = ConfigParser.ConfigParser()
+    self.config = configparser.ConfigParser()
     self.config.read(configPath)
