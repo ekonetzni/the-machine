@@ -1,3 +1,4 @@
+node_modules
 # Stuff I use locally that needn't be tracked
 .DS_Store
 assets/
