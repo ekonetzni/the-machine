@@ -1,6 +1,11 @@
-const util = require('util');
+const { dump, control } = require('./utils');
 /*
- * Methods signature (currentTarget, args: {previousTargets: [], params, context, name })
+ * Machine methods
+ * Methods signature (currentTarget, args: {previousTargets: [], params, context, name }): {
+   result: any
+   name: string
+   args: {previousTargets: [], params, context, name })
+ }
  */
 
 /*
@@ -10,20 +15,6 @@ const util = require('util');
  * - Process video down to image - Image
  * - Clean up
  */
-
-const _dump = obj => util.inspect(obj, { showHidden: false, depth: null });
-const _control = msg => console.log(`[Control] ${msg}`);
-// const getTitle = (
-//   currentTarget,
-//   // { previousTargets: [], params, context, name }
-//   args
-// ) => {
-//   const title = 'Donnie Trumpet';
-//   const result = { name: 'getTitle', result: title, args };
-//   console.log(`Returning from getTitle with ${_dump(result)} `);
-//   console.log('FUCKKKJAS', result);
-//   return result;
-// };
 
 const getTitle = (
   currentTarget,
@@ -45,8 +36,8 @@ const downloadMaterial = (
 };
 
 const executor = (previousResult, currentMethod, index) => {
-  _control(`previousResult is ${_dump(previousResult)} at index ${index}`);
-  _control(`About to execute ${currentMethod.toString()}`);
+  control(`previousResult is ${dump(previousResult)} at index ${index}`);
+  control(`About to execute ${currentMethod.toString()}`);
   const { result, args } = previousResult;
   return currentMethod(result, {
     previousTargets: [...args.previousTargets, result],
@@ -66,7 +57,7 @@ const execute = methods => (initialTarget = {}) => {
     }
   };
   const result = methods.reduce(executor, initialValue);
-  _control(`Result ${_dump(result)}`);
+  control(`Result ${dump(result)}`);
 };
 
 const constructVideo = execute([getTitle, downloadMaterial]);
