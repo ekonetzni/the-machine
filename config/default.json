@@ -1,0 +1,11 @@
+{
+  "general": {
+    "generation": "One"
+  },
+  "settings": {
+    "source": "/home/pi/machine-media/source",
+    "output": "/home/pi/machine-media/output",
+    "storage": "/home/pi/machine-media/long-term-storage",
+    "feed": "https://www.aljazeera.com/xml/rss/all.xml"
+  }
+}

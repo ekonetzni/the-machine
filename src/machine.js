@@ -1,6 +1,12 @@
 const { dump, control } = require('./utils');
+const config = require('config');
+const settings = config.get('settings');
+
+const getQueries = require('./methods/getQueries');
+const selectTitle = require('./methods/selectTitle');
+
 /*
- * Machine methods
+ * Machine methods - use this to enforce the function signature.
  * Methods signature (currentTarget, args: {previousTargets: [], params, context, name }): {
    result: any
    name: string
@@ -16,49 +22,34 @@ const { dump, control } = require('./utils');
  * - Clean up
  */
 
-const getTitle = (
-  currentTarget,
-  // { previousTargets: [], params, context, name }
-  args
-) => ({
-  name: 'getTitle',
-  result: 'donnie trumpet',
-  args
-});
-
-const downloadMaterial = (
-  currentTarget,
-  // { previousTargets: [], params, context, name }
-  args
-) => {
-  const video = { bunchOfData: ';ljasdlpkasjdasj' };
-  return { name: 'downloadMaterial', result: video, args };
-};
-
-const executor = (previousResult, currentMethod, index) => {
+const executor = async (previousResult, currentMethod, index) => {
+  const { result, args } = await previousResult;
   control(`previousResult is ${dump(previousResult)} at index ${index}`);
-  control(`About to execute ${currentMethod.toString()}`);
-  const { result, args } = previousResult;
-  return currentMethod(result, {
+  control(`About to execute ${currentMethod.name}`);
+
+  return await currentMethod(result, {
     previousTargets: [...args.previousTargets, result],
     params: args.params,
     context: args.context
   });
 };
 
-const execute = methods => (initialTarget = {}) => {
+const execute = methods => async (initialTarget = {}) => {
   const initialValue = {
     result: initialTarget,
     name: 'initial',
     args: {
       previousTargets: [],
       params: {},
-      context: {}
+      context: {
+        settings
+      }
     }
   };
-  const result = methods.reduce(executor, initialValue);
+  control(`Beginning execution`);
+  const result = await methods.reduce(executor, initialValue);
   control(`Result ${dump(result)}`);
 };
 
-const constructVideo = execute([getTitle, downloadMaterial]);
+const constructVideo = execute([getQueries, selectTitle]);
 constructVideo({});
