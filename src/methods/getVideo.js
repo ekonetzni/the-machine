@@ -5,21 +5,17 @@
  * }
  */
 const { control } = require('../utils');
-const feedparser = require('feedparser-promised');
+const { google } = require('googleapis');
 
 const METHOD_NAME = 'getVideo';
 const _log = msg => control(msg, METHOD_NAME);
 
-const getVideo = async (_currentTarget, args) => {
-  const { settings } = args.context;
-  let items = [];
+const apiKey = 'AIzaSyDDa_qvePRKjFYMTNdgnDUnsTK-DFGtcsY';
+const youtube = google.youtube({ version: 'v3', auth: apiKey });
+console.log(youtube.search);
 
-  try {
-    items = await feedparser.parse(settings.feed);
-    _log(`Rss result: ${items.length} items`);
-  } catch (err) {
-    _log(`Error: ${err}`);
-  }
+const getVideo = async (currentTarget, args) => {
+  const { settings } = args.context;
 
   return {
     result: '',
