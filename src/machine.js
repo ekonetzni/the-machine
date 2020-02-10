@@ -1,9 +1,11 @@
+require('dotenv').config();
 const { dump, control } = require('./utils');
 const config = require('config');
 const settings = config.get('settings');
 
 const getQueries = require('./methods/getQueries');
 const selectTitle = require('./methods/selectTitle');
+const getVideo = require('./methods/getVideo');
 
 /*
  * Machine methods - use this to enforce the function signature.
@@ -51,5 +53,5 @@ const execute = methods => async (initialTarget = {}) => {
   control(`Result ${dump(result)}`);
 };
 
-const constructVideo = execute([getQueries, selectTitle]);
+const constructVideo = execute([getQueries, selectTitle, getVideo]);
 constructVideo({});

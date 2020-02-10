@@ -10,8 +10,10 @@
   "license": "ISC",
   "dependencies": {
     "config": "^3.2.5",
+    "dotenv": "^8.2.0",
     "feedparser-promised": "^2.0.1",
     "googleapis": "^47.0.0",
-    "opencv4nodejs": "^5.5.0"
+    "opencv4nodejs": "^5.5.0",
+    "ytdl-core": "^1.0.7"
   }
 }

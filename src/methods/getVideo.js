@@ -9,16 +9,30 @@ const { google } = require('googleapis');
 
 const METHOD_NAME = 'getVideo';
 const _log = msg => control(msg, METHOD_NAME);
-
-const apiKey = 'AIzaSyDDa_qvePRKjFYMTNdgnDUnsTK-DFGtcsY';
-const youtube = google.youtube({ version: 'v3', auth: apiKey });
-console.log(youtube.search);
+const youtube = google.youtube({ version: 'v3', auth: process.env.YOUTUBE_KEY });
+const defaultParams = {
+  part: 'id',
+  type: 'video'
+}
+youtube.search.list({ q: 'hello there', part: 'id', maxResults: 10 });
 
 const getVideo = async (currentTarget, args) => {
-  const { settings } = args.context;
+  const params = {
+    ...defaultParams,
+    q: currentTarget
+  };
+  let result;
+
+  try {
+    const results = await youtube.search.list(params);
+    result = results.data.items[0].id.videoId;
+  } catch (err) {
+    results = '';
+    _log(err);
+  }
 
   return {
-    result: '',
+    result,
     name: METHOD_NAME,
     args
   };
