@@ -5,6 +5,7 @@ const settings = config.get('settings');
 
 const getQueries = require('./methods/getQueries');
 const selectTitle = require('./methods/selectTitle');
+const selectVideoId = require('./methods/selectVideoId');
 const getVideo = require('./methods/getVideo');
 
 /*
@@ -53,5 +54,5 @@ const execute = methods => async (initialTarget = {}) => {
   control(`Result ${dump(result)}`);
 };
 
-const constructVideo = execute([getQueries, selectTitle, getVideo]);
+const constructVideo = execute([getQueries, selectTitle, selectVideoId, getVideo]);
 constructVideo({});

@@ -23,7 +23,13 @@ const selectTitle = async (currentTarget, args) => {
   return {
     result: result,
     name: METHOD_NAME,
-    args
+    args: {
+      ...args,
+      context: {
+        ...args.context,
+        selectedTitle: result
+      }
+    }
   };
 };
 
