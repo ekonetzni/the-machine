@@ -19,6 +19,7 @@ const _download = async ({ videoId, basePath, videoTitle }) => {
     filter: format => format.container === 'mp4'
   })
   stream.pipe(fs.createWriteStream(destinationPath));
+  // Next method won't wait for this to complete for some reason.
   return await new Promise(resolve => stream.on('close', resolve(destinationPath)));
 };
 
