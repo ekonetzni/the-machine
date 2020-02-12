@@ -25,19 +25,28 @@ const _download = async ({ videoId, destinationPath }) => {
   return await pipeline(read, write);
 };
 
+const _getFirstVideo = basePath =>
+  fs.readdirSync(basePath).find(
+    fileName => fileName.includes('mp4')
+  );
+
 const getVideo = async (currentTarget, args) => {
   const { settings } = args.context;
   const destinationPath = `${settings.source}/${currentTarget}-${args.context.selectedTitle}.mp4`;
 
   let result;
-  try {
-    await _download({
-      videoId: currentTarget,
-      destinationPath
-    });
-    result = destinationPath;
-  } catch (err) {
-    throw new Error(err);
+  if (!process.env.SKIP_DOWNLOAD) {
+    try {
+      await _download({
+        videoId: currentTarget,
+        destinationPath
+      });
+      result = destinationPath;
+    } catch (err) {
+      throw new Error(err);
+    }
+  } else {
+    result = `${settings.source}/${_getFirstVideo(settings.source)}`;
   }
 
   return {

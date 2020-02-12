@@ -8,6 +8,7 @@ const selectTitle = require('./methods/selectTitle');
 const selectVideoId = require('./methods/selectVideoId');
 const getVideo = require('./methods/getVideo');
 const getImage = require('./methods/getImage');
+const getArrayData = require('./methods/getArrayData');
 
 /*
  * Machine methods - use this to enforce the function signature.
@@ -53,5 +54,14 @@ const execute = methods => async (initialTarget = {}) => {
   control(`Result ${dump(result)}`);
 };
 
-const constructVideo = execute([getQueries, selectTitle, selectVideoId, getVideo, getImage]);
+const sequence = [
+  getQueries,
+  selectTitle,
+  selectVideoId,
+  getVideo,
+  getImage,
+  getArrayData
+];
+
+const constructVideo = execute(sequence);
 constructVideo({});
