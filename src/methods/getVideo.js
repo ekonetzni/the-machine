@@ -6,6 +6,8 @@
  */
 const { control } = require('../utils');
 const fs = require('fs');
+const util = require('util');
+const stream = require('stream');
 const ytdl = require('ytdl-core');
 
 const METHOD_NAME = 'getVideo';
@@ -13,24 +15,30 @@ const _log = msg => control(msg, METHOD_NAME);
 
 const YT_URL = 'http://www.youtube.com/watch?v=';
 
-const _download = async ({ videoId, basePath, videoTitle }) => {
-  const destinationPath = `${basePath}/${videoId}-${videoTitle}.mp4`;
-  const stream = ytdl(`${YT_URL}${videoId}`, {
+const _download = async ({ videoId, destinationPath }) => {
+  const pipeline = util.promisify(stream.pipeline);
+  const read = ytdl(`${YT_URL}${videoId}`, {
     filter: format => format.container === 'mp4'
   })
-  stream.pipe(fs.createWriteStream(destinationPath));
-  // Next method won't wait for this to complete for some reason.
-  return await new Promise(resolve => stream.on('close', resolve(destinationPath)));
+  const write = fs.createWriteStream(destinationPath);
+
+  return await pipeline(read, write);
 };
 
 const getVideo = async (currentTarget, args) => {
   const { settings } = args.context;
+  const destinationPath = `${settings.source}/${currentTarget}-${args.context.selectedTitle}.mp4`;
 
-  const result = await _download({
-    videoId: currentTarget,
-    videoTitle: args.context.selectedTitle,
-    basePath: settings.source
-  });
+  let result;
+  try {
+    await _download({
+      videoId: currentTarget,
+      destinationPath
+    });
+    result = destinationPath;
+  } catch (err) {
+    throw new Error(err);
+  }
 
   return {
     result,
