@@ -32,7 +32,6 @@ const executor = async (previousResult, currentMethod, index) => {
   control(`About to execute ${currentMethod.name}`);
 
   return await currentMethod(result, {
-    previousTargets: [...args.previousTargets, result],
     params: args.params,
     context: args.context
   });
@@ -43,7 +42,6 @@ const execute = methods => async (initialTarget = {}) => {
     result: initialTarget,
     name: 'initial',
     args: {
-      previousTargets: [],
       params: {},
       context: {
         settings
