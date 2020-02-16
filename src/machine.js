@@ -9,6 +9,8 @@ const selectVideoId = require('./methods/selectVideoId');
 const getVideo = require('./methods/getVideo');
 const getImage = require('./methods/getImage');
 const getArrayData = require('./methods/getArrayData');
+const makePainting = require('./methods/makePainting');
+const writeImage = require('./methods/writeImage');
 
 /*
  * Machine methods - use this to enforce the function signature.
@@ -60,7 +62,9 @@ const sequence = [
   selectVideoId,
   getVideo,
   getImage,
-  getArrayData
+  getArrayData,
+  makePainting,
+  writeImage
 ];
 
 const constructVideo = execute(sequence);
