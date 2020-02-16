@@ -16,8 +16,7 @@ const writeImage = async (currentTarget, args) => {
 
   try {
     _log(`Writing painting into ${destinationPath}`);
-    const mat = new cv.Mat(currentTarget, cv.CV_16SC3);
-    console.log(mat);
+    const mat = new cv.Mat(currentTarget, 16);
     cv.imwrite(destinationPath, mat);
   } catch (err) {
     _log(`Painting is dead. ${err}`);

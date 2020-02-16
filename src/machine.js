@@ -31,7 +31,6 @@ const writeImage = require('./methods/writeImage');
 
 const executor = async (previousResult, currentMethod, index) => {
   const { result, args } = await previousResult;
-  control(`previousResult is ${dump(previousResult)} at index ${index}`);
   control(`About to execute ${currentMethod.name}`);
 
   return await currentMethod(result, {
