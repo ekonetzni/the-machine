@@ -32,7 +32,8 @@ const _getFirstVideo = basePath =>
 
 const getVideo = async (currentTarget, args) => {
   const { settings } = args.context;
-  const destinationPath = `${settings.source}/${currentTarget}-${args.context.selectedTitle}.mp4`;
+  const fileName = `${currentTarget}-${args.context.selectedTitle}.mp4`;
+  const destinationPath = `${settings.source}/${fileName}`;
 
   let result;
   if (!process.env.SKIP_DOWNLOAD) {
@@ -52,7 +53,13 @@ const getVideo = async (currentTarget, args) => {
   return {
     result,
     name: METHOD_NAME,
-    args
+    args: {
+      ...args,
+      context: {
+        ...args.context,
+        selectedFileName: fileName
+      }
+    }
   };
 };
 
