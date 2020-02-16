@@ -16,6 +16,7 @@ const getRandomInt = (min, max) => {
   return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
 };
 
+// TODO: There's an opportunity for meaningful choices that I am missing here.
 const _select = arr => arr[getRandomInt(0, arr.length)];
 
 const selectTitle = async (currentTarget, args) => {

@@ -4,8 +4,7 @@
   },
   "settings": {
     "source": "./media/source",
-    "output": "/home/pi/machine-media/output",
-    "storage": "/home/pi/machine-media/long-term-storage",
+    "output": "./media/output",
     "feed": "https://www.aljazeera.com/xml/rss/all.xml"
   }
 }

@@ -13,8 +13,12 @@ const _log = msg => control(msg, METHOD_NAME);
 const getImage = async (currentTarget, args) => {
   const video = new cv.VideoCapture(currentTarget);
   let frame = video.read();
-  while (frame.empty) {
+  let i = 0;
+  while (frame.empty || i < 300) {
+    // This reads about 10ish seconds into the video
+    // use to avoid blank title screens.
     frame = video.read();
+    i++;
   }
 
   return {
