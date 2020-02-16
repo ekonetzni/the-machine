@@ -39,7 +39,7 @@ const makePainting = async (currentTarget, args) => {
   };
 };
 
-const _fire = async () => {
+const __fire = async () => {
   const result = await makePainting(require('../mocks/arrayData.json'), {});
 }
 
