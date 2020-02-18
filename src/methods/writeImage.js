@@ -25,7 +25,13 @@ const writeImage = async (currentTarget, args) => {
   return {
     result: destinationPath,
     name: METHOD_NAME,
-    args
+    args: {
+      ...args,
+      context: {
+        ...args.context,
+        processedFileName: destinationPath
+      }
+    }
   };
 };
 
