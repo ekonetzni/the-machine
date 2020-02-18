@@ -15,6 +15,7 @@ const publishImage = async (currentTarget, args) => {
   const { processedFileName, settings } = args.context;
   const { repositoryPath, repositoryUrl, deployPath } = settings;
   const git = simpleGit(repositoryPath);
+  let result = false;
 
   if (!fs.existsSync(repositoryPath)) {
     _log('Cloning our repository...');
@@ -29,12 +30,13 @@ const publishImage = async (currentTarget, args) => {
     git.add(destination);
     git.commit(processedFileName);
     git.push();
+    result = true;
   } catch (err) {
     _log(`Staging died. ${err}`);
   }
 
   return {
-    result: true,
+    result,
     name: METHOD_NAME,
     args
   };
