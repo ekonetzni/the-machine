@@ -75,7 +75,7 @@ const makePainting = async (currentTarget, args) => {
     _log(
       `Received target of dimensions ${currentTarget.length}, ${currentTarget[0].length}`
     );
-    currentTarget = _shimmy(currentTarget);
+    currentTarget = _midlineHorizontal(currentTarget);
     // writeBlob('./testArray.json', currentTarget);
     _log(
       `After processing, target has dimensions ${currentTarget.length}, ${currentTarget[0].length}`
