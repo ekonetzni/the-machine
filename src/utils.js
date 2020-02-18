@@ -7,10 +7,21 @@ const writeBlob = (path, arrayData) =>
 
 const dump = obj => util.inspect(obj, { showHidden: false, depth: null });
 const control = (subject, name = '') =>
-  console.log(`[Control] {${name}} ${typeof subject === 'string' ? subject : dump(subject)}`);
+  console.log(
+    `[Control] {${name}} ${
+      typeof subject === 'string' ? subject : dump(subject)
+    }`
+  );
+
+const getRandomInt = (min, max) => {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+};
 
 module.exports = {
   dump,
   control,
-  writeBlob
+  writeBlob,
+  getRandomInt
 };

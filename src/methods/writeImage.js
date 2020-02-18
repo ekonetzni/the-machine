@@ -19,7 +19,7 @@ const writeImage = async (currentTarget, args) => {
     const mat = new cv.Mat(currentTarget, 16);
     cv.imwrite(destinationPath, mat);
   } catch (err) {
-    _log(`Painting is dead. ${err}`);
+    _log(`Writing died. ${err}`);
   }
 
   return {
@@ -29,19 +29,16 @@ const writeImage = async (currentTarget, args) => {
   };
 };
 
-const __fire = async () => {
+const __fire = async (data = null) => {
   const result = await writeImage(
-    require('../mocks/paintingArrayData.json'),
+    data || require('../mocks/paintingArrayData.json'),
     {
-      context:
-      {
+      context: {
         selectedFileName: 'Thisisatest.mp4',
-        settings: {
-          output: './media/output'
-        }
+        settings: require('config').get('settings')
       }
     }
   );
-}
+};
 
 module.exports = writeImage;

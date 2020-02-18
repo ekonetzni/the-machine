@@ -4,17 +4,11 @@
  *   args: {previousTargets: [], params, context, name })
  * }
  */
-const { control } = require('../utils');
+const { control, getRandomInt } = require('../utils');
 
 const METHOD_NAME = 'selectTitle';
 const _log = msg => control(msg, METHOD_NAME);
 const _promisify = value => new Promise(() => value);
-
-const getRandomInt = (min, max) => {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
-};
 
 // TODO: There's an opportunity for meaningful choices that I am missing here.
 const _select = arr => arr[getRandomInt(0, arr.length)];
