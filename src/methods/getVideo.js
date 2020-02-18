@@ -19,20 +19,21 @@ const _download = async ({ videoId, destinationPath }) => {
   const pipeline = util.promisify(stream.pipeline);
   const read = ytdl(`${YT_URL}${videoId}`, {
     filter: format => format.container === 'mp4'
-  })
+  });
   const write = fs.createWriteStream(destinationPath);
 
   return await pipeline(read, write);
 };
 
 const _getFirstVideo = basePath =>
-  fs.readdirSync(basePath).find(
-    fileName => fileName.includes('mp4')
-  );
+  fs.readdirSync(basePath).find(fileName => fileName.includes('mp4'));
 
+const _epochNow = () => (new Date() / 1000).toPrecision(12);
+
+// currentTarget needs to be a videoId
 const getVideo = async (currentTarget, args) => {
   const { settings } = args.context;
-  const fileName = `${currentTarget}-${args.context.selectedTitle}.mp4`;
+  const fileName = `${_epochNow()}-${args.context.selectedTitle}.mp4`;
   const destinationPath = `${settings.source}/${fileName}`;
 
   let result;
@@ -64,4 +65,3 @@ const getVideo = async (currentTarget, args) => {
 };
 
 module.exports = getVideo;
-
