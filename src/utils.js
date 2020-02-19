@@ -36,10 +36,20 @@ const readTitles = directory => {
   });
 }
 
+const bailNoUniqueTitle = () => {
+  control('Bailing on this run because we don\'t have a new unique title', 'bailNoUniqueTitle');
+  process.exit(2)
+};
+const exit = () => {
+  control('One step closer to Eden.', 'Machine')
+  process.exit(0);
+}
 module.exports = {
   dump,
   control,
   writeBlob,
   getRandomInt,
-  readTitles
+  readTitles,
+  bailNoUniqueTitle,
+  exit
 };

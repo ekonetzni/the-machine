@@ -6,7 +6,7 @@
  */
 const fs = require('fs');
 const { control } = require('../utils');
-const simpleGit = require('simple-git');
+const simpleGit = require('simple-git/promise');
 
 const METHOD_NAME = 'publishImage';
 const _log = msg => control(msg, METHOD_NAME);
@@ -29,9 +29,9 @@ const publishImage = async (currentTarget, args) => {
     _log(`Staging ${processedFileName}`);
     const destination = `${deployPath}/${processedFileName}`;
     fs.copyFileSync(currentTarget, `${repositoryPath}/${destination}`);
-    git.add(destination);
-    git.commit(processedFileName);
-    git.push();
+    await git.add(destination);
+    await git.commit(processedFileName);
+    await git.push();
     result = true;
   } catch (err) {
     _log(`Staging died. ${err}`);

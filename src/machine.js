@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { dump, control } = require('./utils');
+const { dump, control, exit } = require('./utils');
 const config = require('config');
 const settings = config.get('settings');
 
@@ -12,6 +12,7 @@ const getArrayData = require('./methods/getArrayData');
 const makePainting = require('./methods/makePainting');
 const writeImage = require('./methods/writeImage');
 const publishImage = require('./methods/publishImage');
+const cleanup = require('./methods/cleanup');
 
 /*
  * Machine methods - use this to enforce the function signature.
@@ -32,7 +33,7 @@ const publishImage = require('./methods/publishImage');
 
 const executor = async (previousResult, currentMethod, index) => {
   const { result, args } = await previousResult;
-  control(`About to execute ${currentMethod.name}`);
+  control(`Executing ${currentMethod.name}`);
 
   return await currentMethod(result, {
     params: args.params,
@@ -65,7 +66,9 @@ const sequence = [
   getArrayData,
   makePainting,
   writeImage,
-  publishImage
+  publishImage,
+  cleanup,
+  exit
 ];
 
 const constructVideo = execute(sequence);

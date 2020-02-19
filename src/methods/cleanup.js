@@ -11,36 +11,33 @@ const METHOD_NAME = 'cleanup';
 const _log = msg => control(msg, METHOD_NAME);
 
 const cleanup = async (currentTarget, args) => {
-  const { selectedFileName, processedFileName, settings } = args.context;
-  const { source, output } = settings;
+  let result = false;
+  if (currentTarget) {
+    const { selectedFileName, processedFileName, settings } = args.context;
+    const { source, output } = settings;
 
-  try {
-    _log(`Staging file at ${repositoryPath}/${deployPath}`);
-    _log(`Staging ${processedFileName}`);
-    const destination = `${deployPath}/${processedFileName}`;
-    fs.copyFileSync(currentTarget, `${repositoryPath}/${destination}`);
-    git.add(destination);
-    git.commit(processedFileName);
-    git.push();
-    result = true;
-  } catch (err) {
-    _log(`Staging died. ${err}`);
+    const sourceFile = `${source}/${selectedFileName}`;
+    const outputFile = `${output}/${processedFileName}`
+    try {
+      _log(`Cleaning up ${sourceFile}`);
+      _log(`Cleaning up ${outputFile}`);
+      fs.unlinkSync(sourceFile);
+      fs.unlinkSync(outputFile)
+      result = true;
+    } catch (err) {
+      _log(`Cleanup failed. ${err}`);
+    }
   }
 
   return {
-    result,
+    result: true,
     name: METHOD_NAME,
     args
   };
 };
 
 const __fire = async () => {
-  const result = await cleanup('./media/output/Thisisatest.mp4.jpg', {
-    context: {
-      processedFileName: 'Thisisatest.mp4.jpg',
-      settings: require('config').get('settings')
-    }
-  });
+
 };
 
 // __fire();

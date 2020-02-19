@@ -4,7 +4,7 @@
  *   args: {previousTargets: [], params, context, name })
  * }
  */
-const { control, getRandomInt, readTitles } = require('../utils');
+const { control, readTitles, bailNoUniqueTitle } = require('../utils');
 const settings = require('config').get('settings');
 
 const METHOD_NAME = 'selectTitle';
@@ -27,6 +27,8 @@ const _getUniqueTitle = (titles) => {
 
 const selectTitle = async (currentTarget, args) => {
   const title = _getUniqueTitle(currentTarget);
+  if (!title) { bailNoUniqueTitle(); }
+
   return {
     result: title,
     name: METHOD_NAME,
