@@ -14,17 +14,19 @@ const _log = msg => control(msg, METHOD_NAME);
 const publishImage = async (currentTarget, args) => {
   const { processedFileName, settings } = args.context;
   const { repositoryPath, repositoryUrl, deployPath } = settings;
-  const git = simpleGit(repositoryPath);
   let result = false;
 
   if (!fs.existsSync(repositoryPath)) {
     _log('Cloning our repository...');
-    git.clone(repositoryUrl, repositoryPath);
+    simpleGit('.').clone(repositoryUrl, repositoryPath);
     _log('...Done');
   }
 
+  const git = simpleGit(repositoryPath);
+
   try {
     _log(`Staging file at ${repositoryPath}/${deployPath}`);
+    _log(`Staging ${processedFileName}`);
     const destination = `${deployPath}/${processedFileName}`;
     fs.copyFileSync(currentTarget, `${repositoryPath}/${destination}`);
     git.add(destination);
@@ -50,6 +52,7 @@ const __fire = async () => {
     }
   });
 };
-__fire();
+
+// __fire();
 
 module.exports = publishImage;

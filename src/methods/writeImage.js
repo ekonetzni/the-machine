@@ -12,7 +12,8 @@ const _log = msg => control(msg, METHOD_NAME);
 
 const writeImage = async (currentTarget, args) => {
   const { selectedFileName, settings } = args.context;
-  const destinationPath = `${settings.output}/${selectedFileName}.jpg`;
+  const processedFileName = `${selectedFileName}.jpg`;
+  const destinationPath = `${settings.output}/${processedFileName}`;
 
   try {
     _log(`Writing painting into ${destinationPath}`);
@@ -29,7 +30,7 @@ const writeImage = async (currentTarget, args) => {
       ...args,
       context: {
         ...args.context,
-        processedFileName: destinationPath
+        processedFileName
       }
     }
   };
