@@ -9,7 +9,7 @@ const dump = obj => util.inspect(obj, { showHidden: false, depth: null });
 const control = (subject, name = '') =>
   console.log(
     `[Control] {${name}} ${
-      typeof subject === 'string' ? subject : dump(subject)
+    typeof subject === 'string' ? subject : dump(subject)
     }`
   );
 
@@ -19,9 +19,27 @@ const getRandomInt = (min, max) => {
   return Math.floor(Math.random() * (max - min)) + min;
 };
 
+/* What's hilarious about this function is how poorly it scales. */
+const readTitles = directory => {
+  // Gives us the timestamp at index 1
+  // Gives us the name at index 2.
+  const regex = /([0-9]{10}\.[0-9]{1,})-(.*)\..*\.[a-z0-9]*$/;
+
+  const _date = timestamp => {
+    const d = new Date(timestamp * 1000);
+    return `${d.getFullYear()}`;
+  };
+
+  return fs.readdirSync(directory).map(fileName => {
+    const tags = regex.exec(fileName);
+    return tags ? tags[2] || null : null;
+  });
+}
+
 module.exports = {
   dump,
   control,
   writeBlob,
-  getRandomInt
+  getRandomInt,
+  readTitles
 };

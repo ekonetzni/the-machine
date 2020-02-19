@@ -4,25 +4,37 @@
  *   args: {previousTargets: [], params, context, name })
  * }
  */
-const { control, getRandomInt } = require('../utils');
+const { control, getRandomInt, readTitles } = require('../utils');
+const settings = require('config').get('settings');
 
 const METHOD_NAME = 'selectTitle';
 const _log = msg => control(msg, METHOD_NAME);
 const _promisify = value => new Promise(() => value);
 
-// TODO: There's an opportunity for meaningful choices that I am missing here.
-const _select = arr => arr[getRandomInt(0, arr.length)];
+const existingTitles = readTitles(`${settings.repositoryPath}/${settings.deployPath}`);
+
+const _isTitleUnique = title => !existingTitles.includes(title);
+const _getUniqueTitle = (titles) => {
+  let index = 0;
+  let title = titles[index];
+
+  while (!_isTitleUnique(title) && typeof title !== 'undefined') {
+    index += 1;
+    title = titles[index];
+  }
+  return title;
+}
 
 const selectTitle = async (currentTarget, args) => {
-  const result = Array.isArray(currentTarget) ? _select(currentTarget) : '';
+  const title = _getUniqueTitle(currentTarget);
   return {
-    result: result,
+    result: title,
     name: METHOD_NAME,
     args: {
       ...args,
       context: {
         ...args.context,
-        selectedTitle: result
+        selectedTitle: title
       }
     }
   };
