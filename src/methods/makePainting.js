@@ -12,14 +12,14 @@ const _log = msg => control(msg, METHOD_NAME);
 const _generateFilledRow = (columns, colorValue) =>
   Array.from({ length: columns }, () => colorValue);
 
-const _midlineHorizontal = target => {
-  const numRows = target.length;
-  const numColumns = target[0].length;
+const _midlineHorizontal = sizeFactor => target => {
+  const baseRows = target.length;
+  const numColumns = target[0].length * sizeFactor;
   const samplePixelIndex = numColumns / 2; // Midline
 
+  let output = new Array(target.length * sizeFactor);
   let row = 0;
-  let column = 0;
-  for (row = 0; row < numRows; row++) {
+  for (row = 0; row < baseRows; row++) {
     const color = target[row][samplePixelIndex];
     target[row] = _generateFilledRow(numColumns, color);
   }
@@ -68,14 +68,17 @@ const _shimmy = target => {
   return target;
 };
 
+// We need to scale up 5x.
+
 const makePainting = async (currentTarget, args) => {
+  const { sizeFactor } = args.context.settings;
   // This kind of needs to done in place, unless we pipe it to fs
   // while we work, which just seems like a nightmare.
   try {
     _log(
       `Received target of dimensions ${currentTarget.length}, ${currentTarget[0].length}`
     );
-    currentTarget = _midlineHorizontal(currentTarget);
+    currentTarget = _midlineHorizontal(sizeFactor)(currentTarget);
     // writeBlob('./testArray.json', currentTarget);
     _log(
       `After processing, target has dimensions ${currentTarget.length}, ${currentTarget[0].length}`
