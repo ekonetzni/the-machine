@@ -13,22 +13,16 @@ const _generateFilledRow = (columns, colorValue) =>
   Array.from({ length: columns }, () => colorValue);
 
 const _midlineHorizontal = sizeFactor => target => {
-  const beginSampleIndex = target[0].length / 4; // 25% way in
+  const targetLength = target[0].length;
+  const samplePixelIndex = targetLength / 2; // midline
 
   // Allocate a big ass array.
   let outputRows = new Array(target.length * sizeFactor);
-  const outputColumns = target[0].length * sizeFactor;
+  const outputColumns = targetLength * sizeFactor;
   const baseRows = outputRows.length;
   let row = 0;
-  let sampleTargetRow = 0;
-  let color;
   for (row = 0; row < baseRows; row++) {
-    color = target[Math.floor(row / sizeFactor)][beginSampleIndex];
-    // if (row % sizeFactor === 0) {
-    //   color = target[sampleTargetRowrow / ][beginSampleIndex];
-    //   sampleTargetRow += 1;
-    // }
-
+    const color = target[Math.floor(row / sizeFactor)][samplePixelIndex];
     outputRows[row] = _generateFilledRow(outputColumns, color);
   }
 
