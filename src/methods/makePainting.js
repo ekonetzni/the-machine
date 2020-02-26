@@ -12,6 +12,11 @@ const _log = msg => control(msg, METHOD_NAME);
 const _generateFilledRow = (columns, colorValue) =>
   Array.from({ length: columns }, () => colorValue);
 
+const _generateGradientRow = (length, colorA, colorB, gradient) =>
+  Array.from({ length }), () => {
+    // Here, RTFM
+  });
+
 const _midlineHorizontal = sizeFactor => target => {
   const targetLength = target[0].length;
   const samplePixelIndex = targetLength / 2; // midline
@@ -21,8 +26,26 @@ const _midlineHorizontal = sizeFactor => target => {
   const outputColumns = targetLength * sizeFactor;
   const baseRows = outputRows.length;
   let row = 0;
+  let forwardColor;
+  let gradientFactor = 0;
   for (row = 0; row < baseRows; row++) {
-    const color = target[Math.floor(row / sizeFactor)][samplePixelIndex];
+    const targetRow = Math.floor(row / sizeFactor);
+
+    if (row % sizeFactor === 0) {
+      // Every nth row look forward n rows and
+      // snag a sample color
+      // set gradient factor to n and decrement by 1 each
+      // subsequent loop
+      forwardColor =
+        targetRow + sizeFactor < target.length
+          ? target[targetRow + sizeFactor][samplePixelIndex]
+          : target[target.length - 1][samplePixelIndex];
+      gradientFactor = 0;
+    } else {
+      gradientFactor = gradientFactor - 1;
+    }
+
+    const color = target[targetRow][samplePixelIndex];
     outputRows[row] = _generateFilledRow(outputColumns, color);
   }
 
