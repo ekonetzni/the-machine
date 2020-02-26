@@ -13,7 +13,7 @@ const _generateFilledRow = (columns, colorValue) =>
   Array.from({ length: columns }, () => colorValue);
 
 const _midlineHorizontal = sizeFactor => target => {
-  const samplePixelIndex = target[0].length / 2; // Midline
+  const beginSampleIndex = target[0].length / 4; // 25% way in
 
   // Allocate a big ass array.
   let outputRows = new Array(target.length * sizeFactor);
@@ -23,11 +23,12 @@ const _midlineHorizontal = sizeFactor => target => {
   let sampleTargetRow = 0;
   let color;
   for (row = 0; row < baseRows; row++) {
-    if (row % sizeFactor === 0) {
-      // Every nth row
-      color = target[sampleTargetRow][samplePixelIndex];
-      sampleTargetRow += 1;
-    }
+    color = target[Math.floor(row / sizeFactor)][beginSampleIndex];
+    // if (row % sizeFactor === 0) {
+    //   color = target[sampleTargetRowrow / ][beginSampleIndex];
+    //   sampleTargetRow += 1;
+    // }
+
     outputRows[row] = _generateFilledRow(outputColumns, color);
   }
 
@@ -116,6 +117,6 @@ const __fire = async () => {
   });
 };
 
-// __fire();
+__fire();
 
 module.exports = makePainting;
