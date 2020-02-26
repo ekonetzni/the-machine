@@ -13,8 +13,11 @@ const _generateFilledRow = (columns, colorValue) =>
   Array.from({ length: columns }, () => colorValue);
 
 const _generateGradientRow = (length, colorA, colorB, gradient) =>
-  Array.from({ length }), () => {
-    // Here, RTFM
+  Array.from({ length }, (_, i) => {
+    if (gradient === 0) {
+      return colorA;
+    }
+
   });
 
 const _midlineHorizontal = sizeFactor => target => {
