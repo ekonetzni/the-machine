@@ -13,17 +13,25 @@ const _generateFilledRow = (columns, colorValue) =>
   Array.from({ length: columns }, () => colorValue);
 
 const _midlineHorizontal = sizeFactor => target => {
-  const baseRows = target.length;
-  const numColumns = target[0].length * sizeFactor;
-  const samplePixelIndex = numColumns / 2; // Midline
+  const samplePixelIndex = target[0].length / 2; // Midline
 
-  let output = new Array(target.length * sizeFactor);
+  // Allocate a big ass array.
+  let outputRows = new Array(target.length * sizeFactor);
+  const outputColumns = target[0].length * sizeFactor;
+  const baseRows = outputRows.length;
   let row = 0;
+  let sampleTargetRow = 0;
+  let color;
   for (row = 0; row < baseRows; row++) {
-    const color = target[row][samplePixelIndex];
-    target[row] = _generateFilledRow(numColumns, color);
+    if (row % sizeFactor === 0) {
+      // Every nth row
+      color = target[sampleTargetRow][samplePixelIndex];
+      sampleTargetRow += 1;
+    }
+    outputRows[row] = _generateFilledRow(outputColumns, color);
   }
-  return target;
+
+  return outputRows;
 };
 
 const samplePixelIndex = (i, amountToShift, arrayLength) => {
@@ -79,7 +87,6 @@ const makePainting = async (currentTarget, args) => {
       `Received target of dimensions ${currentTarget.length}, ${currentTarget[0].length}`
     );
     currentTarget = _midlineHorizontal(sizeFactor)(currentTarget);
-    // writeBlob('./testArray.json', currentTarget);
     _log(
       `After processing, target has dimensions ${currentTarget.length}, ${currentTarget[0].length}`
     );
@@ -95,13 +102,17 @@ const makePainting = async (currentTarget, args) => {
 };
 
 const __fire = async () => {
+  const context = {
+    selectedFileName: 'Thisisatest.mp4',
+    settings: require('config').get('settings')
+  };
+
   const writeImage = require('./writeImage');
-  const painting = await makePainting(require('../mocks/arrayData.json'), {});
+  const painting = await makePainting(require('../mocks/arrayData.json'), { context });
+
+  //writeBlob('./testData.json', painting.result);
   const written = await writeImage(painting.result, {
-    context: {
-      selectedFileName: 'Thisisatest.mp4',
-      settings: require('config').get('settings')
-    }
+    context
   });
 };
 
