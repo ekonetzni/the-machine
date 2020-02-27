@@ -12,22 +12,24 @@ const _log = msg => control(msg, METHOD_NAME);
 const _generateFilledRow = (columns, colorValue) =>
   Array.from({ length: columns }, () => colorValue);
 
-const _generateGradientRow = (length, colorA, colorB, gradient, sizeFactor = 1) =>
-  Array.from({ length }, (_, i) => {
+const _generateTriangularGradient = (
+  length,
+  colorA,
+  colorB,
+  gradient,
+  sizeFactor
+) => {
+  return Array.from({ length }, (_, i) => {
     // Out of every sizeFactor pixels, gradient should be colorA
     // the remainder should be colorB
-    if (gradient === 0) {
-      return colorB;
-    }
-    const set = length / sizeFactor;
-
-    // Need to normalize the inputs somehow then just compare if the
-    // result is < or > than gradient and return the appropriate color.
-
-    if (
+    return i % sizeFactor > gradient ? colorB : colorA;
   });
+};
 
-const _midlineHorizontal = sizeFactor => target => {
+const _generateInterleavedGradient = (length, colorA, colorB, gradient) =>
+  Array.from({ length }, (_, i) => (i % gradient === 0 ? colorB : colorA));
+
+const _midlineHorizontalInterleaved = sizeFactor => target => {
   const targetLength = target[0].length;
   const samplePixelIndex = targetLength / 2; // midline
 
@@ -47,64 +49,30 @@ const _midlineHorizontal = sizeFactor => target => {
       // set gradient factor to n and decrement by 1 each
       // subsequent loop
       forwardColor =
-        targetRow + sizeFactor < (target.length - 1)
+        targetRow + sizeFactor < target.length - 1
           ? target[targetRow + sizeFactor][samplePixelIndex]
           : target[target.length - 1][samplePixelIndex];
-      gradientFactor = sizeFactor;
+      gradientFactor = sizeFactor + 2;
     } else {
       gradientFactor = gradientFactor - 1;
     }
 
+    if (gradientFactor < 2) {
+      _log(
+        `gradientFactor is ${gradientFactor} (<2) at r ${row} and sf ${sizeFactor}`
+      );
+    }
     const color = target[targetRow][samplePixelIndex];
-    outputRows[row] = _generateFilledRow(outputColumns, color);
+    outputRows[row] = _generateInterleavedGradient(
+      outputColumns,
+      color,
+      forwardColor,
+      gradientFactor
+    );
   }
 
   return outputRows;
 };
-
-const samplePixelIndex = (i, amountToShift, arrayLength) => {
-  let sampleIndex = i - amountToShift;
-  if (sampleIndex < 0) {
-    sampleIndex = arrayLength - 1 + sampleIndex;
-  } else if (sampleIndex >= arrayLength) {
-    sampleIndex = sampleIndex - arrayLength;
-  }
-  return sampleIndex;
-};
-
-const __shiftArray = (arr, amountToShift) =>
-  Array.from(
-    arr,
-    (_value, index) => arr[samplePixelIndex(index, amountToShift, arr.length)]
-  );
-
-const _shift = target => {
-  const numRows = target.length;
-
-  let row;
-  for (row = 0; row < numRows; row++) {
-    target[row] = __shiftArray(target[row], getRandomInt(-340, 340));
-  }
-  return target;
-};
-
-const _shimmy = target => {
-  const numRows = target.length;
-  const shimmyRange = 300;
-  const shimmyFactor = 50;
-
-  let row;
-  let amountToShimmy = getRandomInt(shimmyRange * -1, shimmyRange);
-  for (row = 0; row < numRows; row++) {
-    target[row] = __shiftArray(target[row], amountToShimmy);
-    amountToShimmy = !!getRandomInt(0, 1)
-      ? amountToShimmy + shimmyFactor
-      : amountToShimmy - shimmyFactor;
-  }
-  return target;
-};
-
-// We need to scale up 5x.
 
 const makePainting = async (currentTarget, args) => {
   const { sizeFactor } = args.context.settings;
@@ -114,7 +82,7 @@ const makePainting = async (currentTarget, args) => {
     _log(
       `Received target of dimensions ${currentTarget.length}, ${currentTarget[0].length}`
     );
-    currentTarget = _midlineHorizontal(sizeFactor)(currentTarget);
+    currentTarget = _midlineHorizontalInterleaved(sizeFactor)(currentTarget);
     _log(
       `After processing, target has dimensions ${currentTarget.length}, ${currentTarget[0].length}`
     );
@@ -131,12 +99,14 @@ const makePainting = async (currentTarget, args) => {
 
 const __fire = async () => {
   const context = {
-    selectedFileName: 'Thisisatest.mp4',
+    selectedFileName: 'Interleavedx15-Colorful.mp4',
     settings: require('config').get('settings')
   };
 
   const writeImage = require('./writeImage');
-  const painting = await makePainting(require('../mocks/arrayData.json'), { context });
+  const painting = await makePainting(require('../mocks/multiColor.json'), {
+    context
+  });
 
   //writeBlob('./testData.json', painting.result);
   const written = await writeImage(painting.result, {
