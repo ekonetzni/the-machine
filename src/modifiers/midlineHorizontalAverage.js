@@ -1,18 +1,26 @@
 const { generateFilledRow } = require('./arrayHelpers');
+const { control } = require('../utils');
+const METHOD_NAME = 'makePainting';
+const _log = msg => control(msg, METHOD_NAME);
+
+const _accumulateReducer = (acc, color) =>
+  [
+    acc[0] + Math.pow(color[0], 2),
+    acc[1] + Math.pow(color[1], 2),
+    acc[2] + Math.pow(color[2], 2)
+  ];
+
+const _meanAbs = total => val => Math.abs(val / total);
+
+const _sqrt = val => Math.sqrt(val);
 
 const _averaged = sample =>
   sample
-    .reduce(
-      (acc, color) => {
-        return [
-          acc[0] + Math.pow(color[0], 2),
-          acc[1] + Math.pow(color[1], 2),
-          acc[2] + Math.pow(color[2], 2)
-        ];
-      },
+    .reduce(_accumulateReducer,
       [0, 0, 0]
     )
-    .map(rgbVal => Math.sqrt(rgbVal));
+    .map(_meanAbs(sample.length))
+    .map(_sqrt);
 
 const _gatherSamples = (target, index, rowsToSample, sampleColumnIndex) =>
   target.slice(index, index + rowsToSample).map(row => row[sampleColumnIndex]);
@@ -37,7 +45,7 @@ const mhAverage = sizeFactor => original => {
     const color =
       row % sizeFactor === 0
         ? original[originalRow][samplePixelIndex]
-        : _averaged(_gatherSamples(original, row, 1, samplePixelIndex));
+        : _averaged(_gatherSamples(original, originalRow, 2, samplePixelIndex));
     modified[row] = generateFilledRow(modifiedColumns, color);
   }
 
