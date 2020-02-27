@@ -8,6 +8,7 @@
     "feed": "https://www.aljazeera.com/xml/rss/all.xml",
     "repositoryUrl": "git@github.com:ekonetzni/ekonetzni.github.io.git",
     "repositoryPath": "./repo",
-    "deployPath": "img/gen1i" // Path inside the repository
+    "deployPath": "img/gen1i",
+    "sizeFactor": 5
   }
 }
