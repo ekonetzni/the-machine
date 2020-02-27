@@ -36,12 +36,12 @@ const makePainting = async (currentTarget, args) => {
 
 const __fire = async () => {
   const context = {
-    selectedFileName: 'mhAveragex15.mp4',
+    selectedFileName: 'mhAveragecx5.mp4',
     settings: require('config').get('settings')
   };
 
   const writeImage = require('./writeImage');
-  const painting = await makePainting(require('../mocks/multiColor.json'), {
+  const painting = await makePainting(require('../mocks/contrast.json'), {
     context
   });
 

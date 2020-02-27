@@ -24,7 +24,7 @@ const mhAverage = sizeFactor => original => {
 
   // Allocate a big ass array.
   let modified = new Array(originalRows * sizeFactor);
-  const modifiedColumns = original * sizeFactor;
+  const modifiedColumns = originalColumns * sizeFactor;
   const modifiedRows = modified.length;
 
   let row = 0;
@@ -37,9 +37,7 @@ const mhAverage = sizeFactor => original => {
     const color =
       row % sizeFactor === 0
         ? original[originalRow][samplePixelIndex]
-        : _averaged(
-            _gatherSamples(original, row, sizeFactor, samplePixelIndex)
-          );
+        : _averaged(_gatherSamples(original, row, 1, samplePixelIndex));
     modified[row] = generateFilledRow(modifiedColumns, color);
   }
 
