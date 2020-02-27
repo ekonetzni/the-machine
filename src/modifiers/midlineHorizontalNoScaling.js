@@ -1,5 +1,4 @@
-const _generateFilledRow = (columns, colorValue) =>
-  Array.from({ length: columns }, () => colorValue);
+const { generateFilledRow } = require('./arrayHelpers');
 
 const midlineHorizontal = target => {
   const numRows = target.length;
