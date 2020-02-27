@@ -73,3 +73,5 @@ const sequence = [
 
 const constructVideo = execute(sequence);
 constructVideo({});
+
+module.exports = execute;

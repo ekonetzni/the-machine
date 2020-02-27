@@ -9,7 +9,7 @@ const midlineHorizontal = target => {
   let column = 0;
   for (row = 0; row < numRows; row++) {
     const color = target[row][samplePixelIndex];
-    target[row] = _generateFilledRow(numColumns, color);
+    target[row] = generateFilledRow(numColumns, color);
   }
   return target;
 };
