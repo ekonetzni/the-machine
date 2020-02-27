@@ -12,15 +12,19 @@ const _log = msg => control(msg, METHOD_NAME);
 const _generateFilledRow = (columns, colorValue) =>
   Array.from({ length: columns }, () => colorValue);
 
-const _generateGradientRow = (length, colorA, colorB, gradient, sizeFactor) =>
+const _generateGradientRow = (length, colorA, colorB, gradient, sizeFactor = 1) =>
   Array.from({ length }, (_, i) => {
     // Out of every sizeFactor pixels, gradient should be colorA
     // the remainder should be colorB
     if (gradient === 0) {
-      return colorA;
+      return colorB;
     }
+    const set = length / sizeFactor;
 
-    if ((i + sizeFactor) % i)
+    // Need to normalize the inputs somehow then just compare if the
+    // result is < or > than gradient and return the appropriate color.
+
+    if (
   });
 
 const _midlineHorizontal = sizeFactor => target => {
@@ -43,7 +47,7 @@ const _midlineHorizontal = sizeFactor => target => {
       // set gradient factor to n and decrement by 1 each
       // subsequent loop
       forwardColor =
-        targetRow + sizeFactor < target.length
+        targetRow + sizeFactor < (target.length - 1)
           ? target[targetRow + sizeFactor][samplePixelIndex]
           : target[target.length - 1][samplePixelIndex];
       gradientFactor = sizeFactor;
