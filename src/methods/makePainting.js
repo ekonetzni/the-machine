@@ -6,6 +6,7 @@
  */
 const { control, getRandomInt, writeBlob } = require('../utils');
 const midlineHorizontal = require('../modifiers/midlineHorizontalNoScaling');
+const midlineHorizontalAverage = require('../modifiers/midlineHorizontalAverage');
 
 const METHOD_NAME = 'makePainting';
 const _log = msg => control(msg, METHOD_NAME);
@@ -18,7 +19,7 @@ const makePainting = async (currentTarget, args) => {
     _log(
       `Received target of dimensions ${currentTarget.length}, ${currentTarget[0].length}`
     );
-    currentTarget = midlineHorizontal(currentTarget);
+    currentTarget = midlineHorizontalAverage(sizeFactor)(currentTarget);
     _log(
       `After processing, target has dimensions ${currentTarget.length}, ${currentTarget[0].length}`
     );
@@ -35,7 +36,7 @@ const makePainting = async (currentTarget, args) => {
 
 const __fire = async () => {
   const context = {
-    selectedFileName: 'Thisisatest.mp4',
+    selectedFileName: 'mhAveragex15.mp4',
     settings: require('config').get('settings')
   };
 

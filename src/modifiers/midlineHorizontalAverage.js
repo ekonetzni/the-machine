@@ -1,48 +1,49 @@
 const { generateFilledRow } = require('./arrayHelpers');
 
-const midlineHorizontalInterleaved = sizeFactor => target => {
-  const targetLength = target[0].length;
-  const samplePixelIndex = targetLength / 2; // midline
+const _averaged = sample =>
+  sample
+    .reduce(
+      (acc, color) => {
+        return [
+          acc[0] + Math.pow(color[0], 2),
+          acc[1] + Math.pow(color[1], 2),
+          acc[2] + Math.pow(color[2], 2)
+        ];
+      },
+      [0, 0, 0]
+    )
+    .map(rgbVal => Math.sqrt(rgbVal));
+
+const _gatherSamples = (target, index, rowsToSample, sampleColumnIndex) =>
+  target.slice(index, index + rowsToSample).map(row => row[sampleColumnIndex]);
+
+const mhAverage = sizeFactor => original => {
+  const originalColumns = original[0].length;
+  const originalRows = original.length;
+  const samplePixelIndex = originalColumns / 2; // midline
 
   // Allocate a big ass array.
-  let outputRows = new Array(target.length * sizeFactor);
-  const outputColumns = targetLength * sizeFactor;
-  const baseRows = outputRows.length;
+  let modified = new Array(originalRows * sizeFactor);
+  const modifiedColumns = original * sizeFactor;
+  const modifiedRows = modified.length;
+
   let row = 0;
-  let forwardColor;
-  let gradientFactor = 0;
-  for (row = 0; row < baseRows; row++) {
-    const targetRow = Math.floor(row / sizeFactor);
+  for (row = 0; row < modifiedRows; row++) {
+    const originalRow = Math.floor(row / sizeFactor);
 
-    if (row % sizeFactor === 0) {
-      // Every nth row look forward n rows and
-      // snag a sample color
-      // set gradient factor to n and decrement by 1 each
-      // subsequent loop
-      forwardColor =
-        targetRow + sizeFactor < target.length - 1
-          ? target[targetRow + sizeFactor][samplePixelIndex]
-          : target[target.length - 1][samplePixelIndex];
-      gradientFactor = sizeFactor + 2;
-    } else {
-      gradientFactor = gradientFactor - 1;
-    }
-
-    if (gradientFactor < 2) {
-      _log(
-        `gradientFactor is ${gradientFactor} (<2) at r ${row} and sf ${sizeFactor}`
-      );
-    }
-    const color = target[targetRow][samplePixelIndex];
-    outputRows[row] = _generateInterleavedGradient(
-      outputColumns,
-      color,
-      forwardColor,
-      gradientFactor
-    );
+    // Every nth row is an original row, just use the color from originalRow.
+    // Every other row is a synthetic row, slice x rows forward and generate an
+    // average.
+    const color =
+      row % sizeFactor === 0
+        ? original[originalRow][samplePixelIndex]
+        : _averaged(
+            _gatherSamples(original, row, sizeFactor, samplePixelIndex)
+          );
+    modified[row] = generateFilledRow(modifiedColumns, color);
   }
 
-  return outputRows;
+  return modified;
 };
 
-module.exports = midlineHorizontalInterleaved;
+module.exports = mhAverage;
