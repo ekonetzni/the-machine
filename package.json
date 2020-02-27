@@ -16,5 +16,8 @@
     "opencv4nodejs": "^5.5.0",
     "simple-git": "^1.131.0",
     "ytdl-core": "^1.0.7"
+  },
+  "opencv4nodejs": {
+    "autoBuildFlags": "-DWITH_FFMPEG=ON"
   }
 }
