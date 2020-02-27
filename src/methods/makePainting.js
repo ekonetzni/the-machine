@@ -12,12 +12,15 @@ const _log = msg => control(msg, METHOD_NAME);
 const _generateFilledRow = (columns, colorValue) =>
   Array.from({ length: columns }, () => colorValue);
 
-const _generateGradientRow = (length, colorA, colorB, gradient) =>
+const _generateGradientRow = (length, colorA, colorB, gradient, sizeFactor) =>
   Array.from({ length }, (_, i) => {
+    // Out of every sizeFactor pixels, gradient should be colorA
+    // the remainder should be colorB
     if (gradient === 0) {
       return colorA;
     }
 
+    if ((i + sizeFactor) % i)
   });
 
 const _midlineHorizontal = sizeFactor => target => {
@@ -43,7 +46,7 @@ const _midlineHorizontal = sizeFactor => target => {
         targetRow + sizeFactor < target.length
           ? target[targetRow + sizeFactor][samplePixelIndex]
           : target[target.length - 1][samplePixelIndex];
-      gradientFactor = 0;
+      gradientFactor = sizeFactor;
     } else {
       gradientFactor = gradientFactor - 1;
     }
