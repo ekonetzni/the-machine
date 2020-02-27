@@ -5,7 +5,7 @@
  * }
  */
 const { control, getRandomInt, writeBlob } = require('../utils');
-const midlineHorizontalInterleaved = require('../modifiers/midlineHorizontalInterleavedGradient');
+const midlineHorizontal = require('../modifiers/midlineHorizontalNoScaling');
 
 const METHOD_NAME = 'makePainting';
 const _log = msg => control(msg, METHOD_NAME);
@@ -18,7 +18,7 @@ const makePainting = async (currentTarget, args) => {
     _log(
       `Received target of dimensions ${currentTarget.length}, ${currentTarget[0].length}`
     );
-    currentTarget = midlineHorizontalInterleaved(sizeFactor)(currentTarget);
+    currentTarget = midlineHorizontal(currentTarget);
     _log(
       `After processing, target has dimensions ${currentTarget.length}, ${currentTarget[0].length}`
     );
@@ -35,7 +35,7 @@ const makePainting = async (currentTarget, args) => {
 
 const __fire = async () => {
   const context = {
-    selectedFileName: 'Interleavedx15-Colorful.mp4',
+    selectedFileName: 'Thisisatest.mp4',
     settings: require('config').get('settings')
   };
 
