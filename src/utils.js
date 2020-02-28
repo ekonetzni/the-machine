@@ -9,7 +9,7 @@ const dump = obj => util.inspect(obj, { showHidden: false, depth: null });
 const control = (subject, name = '') =>
   console.log(
     `[Control] {${name}} ${
-    typeof subject === 'string' ? subject : dump(subject)
+      typeof subject === 'string' ? subject : dump(subject)
     }`
   );
 
@@ -34,16 +34,24 @@ const readTitles = directory => {
     const tags = regex.exec(fileName);
     return tags ? tags[2] || null : null;
   });
-}
+};
 
+const bailNoValidFiles = () => {
+  control('Bailing because we have no valid files to biggen.', 'NoValidFiles');
+  process.exit(3);
+};
 const bailNoUniqueTitle = () => {
-  control('Bailing on this run because we don\'t have a new unique title', 'bailNoUniqueTitle');
-  process.exit(2)
+  control(
+    "Bailing on this run because we don't have a new unique title",
+    'bailNoUniqueTitle'
+  );
+  process.exit(2);
 };
 const exit = () => {
-  control('One step closer to Eden.', 'Machine')
+  control('One step closer to Eden.', 'Machine');
   process.exit(0);
-}
+};
+
 module.exports = {
   dump,
   control,
@@ -51,5 +59,6 @@ module.exports = {
   getRandomInt,
   readTitles,
   bailNoUniqueTitle,
+  bailNoValidFiles,
   exit
 };

@@ -7,10 +7,10 @@
 const { control } = require('../utils');
 const cv = require('opencv4nodejs');
 
-const METHOD_NAME = 'getImage';
+const METHOD_NAME = 'getFrame';
 const _log = msg => control(msg, METHOD_NAME);
 
-const getImage = async (currentTarget, args) => {
+const getFrame = async (currentTarget, args) => {
   const video = new cv.VideoCapture(currentTarget);
   let frame = video.read();
   let i = 0;
@@ -30,5 +30,4 @@ const getImage = async (currentTarget, args) => {
   };
 };
 
-module.exports = getImage;
-
+module.exports = getFrame;

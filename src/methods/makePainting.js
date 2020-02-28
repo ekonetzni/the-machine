@@ -5,29 +5,34 @@
  * }
  */
 const { control, getRandomInt, writeBlob } = require('../utils');
+
 const midlineHorizontal = require('../modifiers/midlineHorizontalNoScaling');
+const midlineHorizontalAverage = require('../modifiers/midlineHorizontalAverage');
 
 const METHOD_NAME = 'makePainting';
 const _log = msg => control(msg, METHOD_NAME);
 
 const makePainting = async (currentTarget, args) => {
   const { sizeFactor } = args.context.settings;
+  let result;
   // This kind of needs to done in place, unless we pipe it to fs
   // while we work, which just seems like a nightmare.
   try {
     _log(
       `Received target of dimensions ${currentTarget.length}, ${currentTarget[0].length}`
     );
-    currentTarget = midlineHorizontal(currentTarget);
+    result = midlineHorizontalAverage(sizeFactor)(currentTarget);
+    // Hacking here to try to keep memory footprint a bit lower.
+    currentTarget = [];
     _log(
-      `After processing, target has dimensions ${currentTarget.length}, ${currentTarget[0].length}`
+      `After processing, target has dimensions ${result.length}, ${result[0].length}`
     );
   } catch (err) {
     _log(`Painting is dead.${err}`);
   }
 
   return {
-    result: currentTarget,
+    result,
     name: METHOD_NAME,
     args
   };
@@ -35,7 +40,7 @@ const makePainting = async (currentTarget, args) => {
 
 const __fire = async () => {
   const context = {
-    selectedFileName: 'Thisisatest.mp4',
+    selectedFileName: 'multiColorAverage15x.mp4',
     settings: require('config').get('settings')
   };
 
@@ -50,6 +55,6 @@ const __fire = async () => {
   });
 };
 
-__fire();
+// __fire();
 
 module.exports = makePainting;

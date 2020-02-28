@@ -9,6 +9,6 @@
     "repositoryUrl": "git@github.com:ekonetzni/ekonetzni.github.io.git",
     "repositoryPath": "./repo",
     "deployPath": "img/gen1i",
-    "sizeFactor": 5
+    "sizeFactor": 10
   }
 }

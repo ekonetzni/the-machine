@@ -12,12 +12,13 @@ const _log = msg => control(msg, METHOD_NAME);
 
 const writeImage = async (currentTarget, args) => {
   const { selectedFileName, settings } = args.context;
-  const processedFileName = `${selectedFileName}.jpg`;
+  const processedFileName = `${selectedFileName}x${settings.sizeFactor}.jpg`;
   const destinationPath = `${settings.output}/${processedFileName}`;
 
   try {
-    _log(`Writing painting into ${destinationPath}`);
+    _log('Initiating big ass mat');
     const mat = new cv.Mat(currentTarget, 16);
+    _log(`Writing painting into ${destinationPath}`);
     cv.imwrite(destinationPath, mat);
   } catch (err) {
     _log(`Writing died. ${err}`);
