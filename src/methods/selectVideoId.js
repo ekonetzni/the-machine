@@ -10,15 +10,11 @@ const { google } = require('googleapis');
 const METHOD_NAME = 'selectVideoId';
 const _log = msg => control(msg, METHOD_NAME);
 
-const youtube = google.youtube({ version: 'v3', auth: process.env.YOUTUBE_KEY });
-const defaultParams = {
-  part: 'id',
-  type: 'video'
-}
-
 const selectVideoId = async (currentTarget, args) => {
+  const youtube = google.youtube({ version: 'v3', auth: process.env.YOUTUBE_KEY });
   const params = {
-    ...defaultParams,
+    part: 'id',
+    type: 'video',
     q: currentTarget
   };
   let result;
@@ -37,5 +33,12 @@ const selectVideoId = async (currentTarget, args) => {
     args
   };
 };
+
+const __fire = async () => {
+  require('dotenv').config();
+  const id = await selectVideoId('William Gibson Interview', {});
+  console.log(id)
+}
+// __fire();
 
 module.exports = selectVideoId;
