@@ -7,7 +7,7 @@ const getQueries = require('./methods/getQueries');
 const selectTitle = require('./methods/selectTitle');
 const selectVideoId = require('./methods/selectVideoId');
 const getVideo = require('./methods/getVideo');
-const getImage = require('./methods/getImage');
+const getFrame = require('./methods/getFrame');
 const getArrayData = require('./methods/getArrayData');
 const makePainting = require('./methods/makePainting');
 const writeImage = require('./methods/writeImage');
@@ -62,7 +62,7 @@ const sequence = [
   selectTitle,
   selectVideoId,
   getVideo,
-  getImage,
+  getFrame,
   getArrayData,
   makePainting,
   writeImage,
