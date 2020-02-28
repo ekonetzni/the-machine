@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "execute": "node src/machine.js"
+    "paint": "node src/bin/paint.js",
+    "enlarge": "node --max-old-space-size=8192 src/bin/bigger.js"
   },
   "author": "",
   "license": "ISC",

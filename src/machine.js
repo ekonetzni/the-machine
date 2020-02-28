@@ -41,14 +41,15 @@ const executor = async (previousResult, currentMethod, index) => {
   });
 };
 
-const execute = methods => async (initialTarget = {}) => {
+const execute = methods => async (initialTarget = {}, context = {}) => {
   const initialValue = {
     result: initialTarget,
     name: 'initial',
     args: {
       params: {},
       context: {
-        settings
+        settings,
+        ...context
       }
     }
   };
@@ -72,6 +73,6 @@ const sequence = [
 ];
 
 const constructVideo = execute(sequence);
-constructVideo({});
+//constructVideo({});
 
 module.exports = execute;

@@ -55,6 +55,6 @@ const __fire = async () => {
   });
 };
 
-__fire();
+// __fire();
 
 module.exports = makePainting;
