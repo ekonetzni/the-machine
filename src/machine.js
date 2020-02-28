@@ -3,17 +3,6 @@ const { dump, control, exit } = require('./utils');
 const config = require('config');
 const settings = config.get('settings');
 
-const getQueries = require('./methods/getQueries');
-const selectTitle = require('./methods/selectTitle');
-const selectVideoId = require('./methods/selectVideoId');
-const getVideo = require('./methods/getVideo');
-const getFrame = require('./methods/getFrame');
-const getArrayData = require('./methods/getArrayData');
-const makePainting = require('./methods/makePainting');
-const writeImage = require('./methods/writeImage');
-const publishImage = require('./methods/publishImage');
-const cleanup = require('./methods/cleanup');
-
 /*
  * Machine methods - use this to enforce the function signature.
  * Methods signature (currentTarget, args: {previousTargets: [], params, context, name }): {
@@ -57,22 +46,5 @@ const execute = methods => async (initialTarget = {}, context = {}) => {
   const result = await methods.reduce(executor, initialValue);
   control(`Result ${dump(result)}`);
 };
-
-const sequence = [
-  getQueries,
-  selectTitle,
-  selectVideoId,
-  getVideo,
-  getFrame,
-  getArrayData,
-  makePainting,
-  writeImage,
-  publishImage,
-  cleanup,
-  exit
-];
-
-const constructVideo = execute(sequence);
-//constructVideo({});
 
 module.exports = execute;
