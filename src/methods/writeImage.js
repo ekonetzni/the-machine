@@ -12,7 +12,7 @@ const _log = msg => control(msg, METHOD_NAME);
 
 const writeImage = async (currentTarget, args) => {
   const { selectedFileName, settings } = args.context;
-  const processedFileName = `${selectedFileName}x${settings.sizeFactor}.jpg`;
+  const processedFileName = `${selectedFileName}.jpg`;
   const destinationPath = `${settings.output}/${processedFileName}`;
 
   try {
