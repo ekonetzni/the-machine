@@ -1,6 +1,6 @@
 require('dotenv').config();
 const execute = require('../machine');
-const { exit } = require('../utils');
+const { control, exit } = require('../utils');
 
 const getQueries = require('../methods/getQueries');
 const selectTitle = require('../methods/selectTitle');
@@ -27,4 +27,9 @@ const constructVideo = execute([
   exit
 ]);
 
-constructVideo({});
+try {
+  constructVideo({});
+} catch (err) {
+  control(err, "CRASH");
+  process.exit(1);
+}
