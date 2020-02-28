@@ -21,7 +21,7 @@ const makePainting = async (currentTarget, args) => {
     _log(
       `Received target of dimensions ${currentTarget.length}, ${currentTarget[0].length}`
     );
-    result = midlineHorizontalAverage(sizeFactor)(currentTarget);
+    result = midlineHorizontal(currentTarget);
     // Hacking here to try to keep memory footprint a bit lower.
     currentTarget = [];
     _log(
