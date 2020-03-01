@@ -38,15 +38,11 @@ const getVideo = async (currentTarget, args) => {
 
   let result;
   if (!process.env.SKIP_DOWNLOAD) {
-    try {
-      await _download({
-        videoId: currentTarget,
-        destinationPath
-      });
-      result = destinationPath;
-    } catch (err) {
-      throw new Error(err);
-    }
+    await _download({
+      videoId: currentTarget,
+      destinationPath
+    });
+    result = destinationPath;
   } else {
     result = `${settings.source}/${_getFirstVideo(settings.source)}`;
   }

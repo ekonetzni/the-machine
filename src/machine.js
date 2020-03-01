@@ -24,10 +24,14 @@ const executor = async (previousResult, currentMethod, index) => {
   const { result, args } = await previousResult;
   control(`Executing ${currentMethod.name}`);
 
-  return await currentMethod(result, {
-    params: args.params,
-    context: args.context
-  });
+  try {
+    return await currentMethod(result, {
+      params: args.params,
+      context: args.context
+    });
+  } catch (err) {
+    control(`Exception in ${currentMethod.toString()}: ${err}`);
+  }
 };
 
 const execute = methods => async (initialTarget = {}, context = {}) => {

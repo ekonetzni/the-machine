@@ -18,15 +18,11 @@ const cleanup = async (currentTarget, args) => {
 
     const sourceFile = `${source}/${selectedFileName}`;
     const outputFile = `${output}/${processedFileName}`
-    try {
-      _log(`Cleaning up ${sourceFile}`);
-      _log(`Cleaning up ${outputFile}`);
-      fs.unlinkSync(sourceFile);
-      fs.unlinkSync(outputFile)
-      result = true;
-    } catch (err) {
-      _log(`Cleanup failed. ${err}`);
-    }
+    _log(`Cleaning up ${sourceFile}`);
+    _log(`Cleaning up ${outputFile}`);
+    fs.unlinkSync(sourceFile);
+    fs.unlinkSync(outputFile)
+    result = true;
   }
 
   return {

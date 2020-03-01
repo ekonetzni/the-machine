@@ -17,19 +17,15 @@ const makePainting = async (currentTarget, args) => {
   let result;
   // This kind of needs to done in place, unless we pipe it to fs
   // while we work, which just seems like a nightmare.
-  try {
-    _log(
-      `Received target of dimensions ${currentTarget.length}, ${currentTarget[0].length}`
-    );
-    result = midlineHorizontal(currentTarget);
-    // Hacking here to try to keep memory footprint a bit lower.
-    currentTarget = [];
-    _log(
-      `After processing, target has dimensions ${result.length}, ${result[0].length}`
-    );
-  } catch (err) {
-    _log(`Painting is dead.${err}`);
-  }
+  _log(
+    `Received target of dimensions ${currentTarget.length}, ${currentTarget[0].length}`
+  );
+  result = midlineHorizontal(currentTarget);
+  // Hacking here to try to keep memory footprint a bit lower.
+  currentTarget = [];
+  _log(
+    `After processing, target has dimensions ${result.length}, ${result[0].length}`
+  );
 
   return {
     result,

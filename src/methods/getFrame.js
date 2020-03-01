@@ -20,7 +20,6 @@ const getFrame = async (currentTarget, args) => {
     frame = video.read();
     i++;
   }
-  console.log(frame);
   _log(`Return frame ${frame}`);
 
   return {

@@ -17,15 +17,8 @@ const selectVideoId = async (currentTarget, args) => {
     type: 'video',
     q: currentTarget
   };
-  let result;
-
-  try {
-    const results = await youtube.search.list(params);
-    result = results.data.items[0].id.videoId;
-  } catch (err) {
-    results = '';
-    _log(err);
-  }
+  const results = await youtube.search.list(params);
+  const result = results.data.items[0].id.videoId;
 
   return {
     result,

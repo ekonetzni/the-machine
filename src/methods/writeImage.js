@@ -15,14 +15,10 @@ const writeImage = async (currentTarget, args) => {
   const processedFileName = `${selectedFileName}.jpg`;
   const destinationPath = `${settings.output}/${processedFileName}`;
 
-  try {
-    _log('Initiating big ass mat');
-    const mat = new cv.Mat(currentTarget, 16);
-    _log(`Writing painting into ${destinationPath}`);
-    cv.imwrite(destinationPath, mat);
-  } catch (err) {
-    _log(`Writing died. ${err}`);
-  }
+  _log('Initiating big ass mat');
+  const mat = new cv.Mat(currentTarget, 16);
+  _log(`Writing painting into ${destinationPath}`);
+  cv.imwrite(destinationPath, mat);
 
   return {
     result: destinationPath,
