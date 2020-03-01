@@ -14,13 +14,7 @@ const _log = msg => control(msg, METHOD_NAME);
 
 const makePainting = async (currentTarget, args) => {
   const { sizeFactor } = args.context.settings;
-  let result;
-  // This kind of needs to done in place, unless we pipe it to fs
-  // while we work, which just seems like a nightmare.
-  _log(
-    `Received target of dimensions ${currentTarget.length}, ${currentTarget[0].length}`
-  );
-  result = midlineHorizontal(currentTarget);
+  const result = midlineHorizontalAverage(sizeFactor)(currentTarget);
   // Hacking here to try to keep memory footprint a bit lower.
   currentTarget = [];
   _log(
