@@ -40,4 +40,4 @@ method(process.argv).forEach(async path => {
   const r = await resize(path, {
     selectedFileName: path.split('/').pop()
   });
-});
+}
