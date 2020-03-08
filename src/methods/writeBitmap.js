@@ -86,6 +86,7 @@ const generateBitmapDataURL = (rows, scale = 1) => {
     _collapseData(rows, row_padding)
   );
 
+  // TODO: This technique works if we need to store hex...but we don't?
   return require('btoa')(file);
 };
 
@@ -107,8 +108,8 @@ const writeBitmap = async (currentTarget, args) => {
 
   _log('About to write bitmap');
   const bmp = generateBitmapDataURL(currentTarget);
-  const file = `<html><body><img src='data:image/bmp;base64,${bmp}' /></body></html>`;
-  require('fs').writeFileSync(destinationPath, bmp);
+  //const file = `<html><body><img src='data:image/bmp;base64,${bmp}' /></body></html>`;
+  require('fs').writeFileSync(destinationPath, bmp, 'base64');
 
   return {
     result: destinationPath,
