@@ -1,4 +1,35 @@
-const _asLittleEndianHex = (value, bytes) => {
+/*!
+ * Generate Bitmap Data URL
+ * http://mrcoles.com/low-res-paint/
+ *
+ * Copyright 2010, Peter Coles
+ * Licensed under the MIT licenses.
+ * http://mrcoles.com/media/mit-license.txt
+ *
+ * Date: Tue Oct 26 00:00:00 2010 -0500
+ */
+
+/*
+ * Code to generate Bitmap images (using data urls) from rows of RGB arrays.
+ * Specifically for use with http://mrcoles.com/low-rest-paint/
+ *
+ * Research:
+ *
+ * RFC 2397 data URL
+ * http://www.xs4all.nl/~wrb/Articles/Article_IMG_RFC2397_P1_01.htm
+ *
+ * BMP file Format
+ * http://en.wikipedia.org/wiki/BMP_file_format#Example_of_a_2.C3.972_Pixel.2C_24-Bit_Bitmap_.28Windows_V3_DIB.29
+ *
+ * BMP Notes
+ *
+ * - Integer values are little-endian, including RGB pixels, e.g., (255, 0, 0) -> \x00\x00\xFF
+ * - Bitmap data starts at lower left (and reads across rows)
+ * - In the BMP data, padding bytes are inserted in order to keep the lines of data in multiples of four,
+ *   e.g., a 24-bit bitmap with width 1 would have 3 bytes of data per row (R, G, B) + 1 byte of padding
+ */
+
+function _asLittleEndianHex(value, bytes) {
   // Convert value into little endian hex bytes
   // value - the number as a decimal integer (representing bytes)
   // bytes - the number of bytes that this value takes up in a string
@@ -8,7 +39,6 @@ const _asLittleEndianHex = (value, bytes) => {
   // > '\x13\x0b\x00\x00'
 
   var result = [];
-  _log(`Called with ${value}`);
 
   for (; bytes > 0; bytes--) {
     result.push(String.fromCharCode(value & 255));
@@ -18,7 +48,7 @@ const _asLittleEndianHex = (value, bytes) => {
   return result.join('');
 }
 
-const _collapseData = (rows, row_padding) => {
+function _collapseData(rows, row_padding) {
   // Convert rows of RGB arrays into BMP data
   var i,
     rows_len = rows.length,
@@ -35,11 +65,9 @@ const _collapseData = (rows, row_padding) => {
   for (i = 0; i < rows_len; i++) {
     for (j = 0; j < pixels_len; j++) {
       pixel = rows[i][j];
-      result.push(
-        String.fromCharCode(pixel[2]) +
+      result.push(String.fromCharCode(pixel[2]) +
         String.fromCharCode(pixel[1]) +
-        String.fromCharCode(pixel[0])
-      );
+        String.fromCharCode(pixel[0]));
     }
     result.push(padding);
   }
@@ -47,18 +75,45 @@ const _collapseData = (rows, row_padding) => {
   return result.join('');
 }
 
-const generateBitmapDataURL = (rows, scale = 1) => {
+function _scaleRows(rows, scale) {
+  // Simplest scaling possible
+  var real_w = rows.length,
+    scaled_w = parseInt(real_w * scale),
+    real_h = real_w ? rows[0].length : 0,
+    scaled_h = parseInt(real_h * scale),
+    new_rows = [],
+    new_row, x, y;
+
+  for (y = 0; y < scaled_h; y++) {
+    new_rows.push(new_row = []);
+    for (x = 0; x < scaled_w; x++) {
+      new_row.push(rows[parseInt(y / scale)][parseInt(x / scale)]);
+    }
+  }
+  return new_rows;
+}
+
+window.generateBitmapDataURL = function (rows, scale) {
   // Expects rows starting in bottom left
   // formatted like this: [[[255, 0, 0], [255, 255, 0], ...], ...]
   // which represents: [[red, yellow, ...], ...]
 
-  var height = rows.length,                              // the number of rows
+  if (!window.btoa) {
+    alert('Oh no, your browser does not support base64 encoding - window.btoa()!!');
+    return false;
+  }
+
+  scale = scale || 1;
+  if (scale != 1) {
+    rows = _scaleRows(rows, scale);
+  }
+
+  var height = rows.length,                                // the number of rows
     width = height ? rows[0].length : 0,                 // the number of columns per row
     row_padding = (4 - (width * 3) % 4) % 4,             // pad each row to a multiple of 4 bytes
     num_data_bytes = (width * 3 + row_padding) * height, // size in bytes of BMP data
     num_file_bytes = 54 + num_data_bytes,                // full header size (offset) + size of data
     file;
-  _log(`height ${height}, width ${width}, num_data_bytes ${num_data_bytes}`)
 
   height = _asLittleEndianHex(height, 4);
   width = _asLittleEndianHex(width, 4);
@@ -86,55 +141,5 @@ const generateBitmapDataURL = (rows, scale = 1) => {
     _collapseData(rows, row_padding)
   );
 
-  return require('btoa')(file);
+  return 'data:image/bmp;base64,' + btoa(file);
 };
-
-/* Methods signature (currentTarget, args: {previousTargets: [], params, context, name }): {
- *   result: any
- *   name: string
- *   args: {previousTargets: [], params, context, name })
- * }
- */
-const { control } = require('../utils');
-
-const METHOD_NAME = 'writeBitmap';
-const _log = msg => control(msg, METHOD_NAME);
-
-const writeBitmap = async (currentTarget, args) => {
-  const { selectedFileName, settings } = args.context;
-  const processedFileName = `${selectedFileName}.bmp`;
-  const destinationPath = `${settings.output}/${processedFileName}`;
-
-  _log('About to write bitmap');
-  const bmp = generateBitmapDataURL(currentTarget);
-  const file = `<html><body><img src='data:image/bmp;base64,${bmp}' /></body></html>`;
-  require('fs').writeFileSync(destinationPath, bmp);
-
-  return {
-    result: destinationPath,
-    name: METHOD_NAME,
-    args: {
-      ...args,
-      context: {
-        ...args.context,
-        processedFileName
-      }
-    }
-  };
-};
-
-const __fire = async (data = null) => {
-  const result = await writeBitmap(
-    data || require('../mocks/paintingArrayData.json'),
-    {
-      context: {
-        selectedFileName: 'Thisisatest.mp4',
-        settings: require('config').get('settings')
-      }
-    }
-  );
-};
-
-__fire();
-
-module.exports = writeBitmap;
