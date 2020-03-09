@@ -4,9 +4,9 @@
  *   args: {previousTargets: [], params, context, name })
  * }
  */
-const { control, getRandomInt, streamBlob } = require('../utils');
+const { control, getRandomInt, writeBlob } = require('../utils');
+const { Readable } = require('stream');
 
-const midlineHorizontal = require('../modifiers/midlineHorizontalNoScaling');
 const midlineHorizontalAverage = require('../modifiers/midlineHorizontalAverage');
 
 const METHOD_NAME = 'makePainting';
@@ -45,7 +45,7 @@ const __fire = async () => {
     context
   });
 
-  const stream = await streamBlob('./testData.json', painting.result);
+  writeBlob('./testData.json', painting.result);
   // const written = await writeImage(painting.result, {
   //   context
   // });

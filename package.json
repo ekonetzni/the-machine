@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "big-json": "^3.1.0",
     "btoa": "^1.2.1",
     "config": "^3.2.5",
     "dotenv": "^8.2.0",

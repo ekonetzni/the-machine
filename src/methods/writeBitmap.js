@@ -11,7 +11,6 @@ const writeBitmap = async (currentTarget, args) => {
 
   _log('About to write bitmap');
   const bmp = generateBitmap(currentTarget);
-  //const file = `<html><body><img src='data:image/bmp;base64,${bmp}' /></body></html>`;
   require('fs').writeFileSync(destinationPath, bmp, 'base64');
 
   return {

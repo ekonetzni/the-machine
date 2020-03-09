@@ -45,5 +45,5 @@ const __fire = async (data = null) => {
   );
 };
 
-__fire();
+// __fire();
 module.exports = writeImage;
