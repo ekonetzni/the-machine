@@ -16,6 +16,7 @@
     "dotenv": "^8.2.0",
     "feedparser-promised": "^2.0.1",
     "googleapis": "^47.0.0",
+    "jimp": "^0.9.5",
     "opencv4nodejs": "^5.5.0",
     "simple-git": "^1.131.0",
     "ytdl-core": "^1.0.7"
