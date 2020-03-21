@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "paint": "node src/bin/paint.js",
+    "paint": "node --unhandled-rejections=strict src/bin/paint.js",
     "enlarge": "node --max-old-space-size=8192 src/bin/bigger.js"
   },
   "author": "",
