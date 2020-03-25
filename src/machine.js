@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { dump, control, exit } = require('./utils');
+const { dump, control, logError, exit } = require('./utils');
 const config = require('config');
 const settings = config.get('settings');
 
@@ -30,7 +30,8 @@ const executor = async (previousResult, currentMethod, index) => {
       context: args.context
     });
   } catch (err) {
-    control(`Exception in ${currentMethod.toString()}: ${err}`);
+    logError('Machine', err);
+    if (process.env.DEBUG) { throw (err) };
   }
 };
 
