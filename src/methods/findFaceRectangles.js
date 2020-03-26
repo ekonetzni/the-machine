@@ -35,7 +35,8 @@ const findFaceRectangles = async (currentTarget, args) => {
       faces =
         faceClassifier.detectMultiScale(
           frame.bgrToGray(),
-          1.005
+          1.03,
+          4
         );
       isFaceFound = !!faces.objects.length
 

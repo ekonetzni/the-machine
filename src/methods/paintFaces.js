@@ -6,7 +6,7 @@
  */
 const { control, getRandomInt, writeBlob } = require('../utils');
 
-const midlineHorizontal = require('../modifiers/midlineWithBoundingRectangle');
+const mutation = require('../modifiers/midlineWithBoundingRectangle');
 
 const METHOD_NAME = 'paintFaces';
 const _log = msg => control(msg, METHOD_NAME);
@@ -20,17 +20,15 @@ const paintFaces = async (currentTarget, args) => {
   _log(
     `Received target of dimensions ${currentTarget.length}, ${currentTarget[0].length}`
   );
-  result = faceRectangles.reduce(
-    (image, rectangle) => midlineHorizontal(rectangle, image),
-    currentTarget
-  )
+  result = mutation(faceRectangles, currentTarget);
+
   // Hacking here to try to keep memory footprint a bit lower.
   currentTarget = [];
   _log(
     `After processing, target has dimensions ${result.length}, ${result[0].length}`
   );
 
-  writeBlob('./faces.json', result);
+  if (process.env.DEBUG) { writeBlob('./faces.json', result) };
 
   return {
     result,
