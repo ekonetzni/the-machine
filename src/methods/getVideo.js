@@ -30,7 +30,7 @@ const _getFirstVideo = basePath =>
 
 const _epochNow = () => (new Date() / 1000).toPrecision(12);
 
-const TEST_FILE = '1585162969.01-Coronavirus in Mexico President blamed for slow reaction.mp4';
+const TEST_FILE = '1585761455.71-UK coronavirus deaths jump by record 563 in a day Live updates.mp4';
 // currentTarget needs to be a videoId
 const getVideo = async (currentTarget, args) => {
   const { settings } = args.context;

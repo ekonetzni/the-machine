@@ -1,5 +1,5 @@
 const { control } = require('../utils');
-const { generateFilledRow } = require('./arrayHelpers');
+const { generateFilledRow, sortRectanglesByArea } = require('./arrayHelpers');
 const RECT_PADDING = 100;
 
 const METHOD_NAME = 'midline';
@@ -51,9 +51,6 @@ const columnIsInside = (rect, c) =>
 const pixelIsInside = (rect, column, row) =>
   rowIsInside(rect, row) && columnIsInside(rect, column);
 
-const _sortRectanglesByArea = (a, b) =>
-  (a.width * a.height) - (b.width * b.height);
-
 const midlineVertical = (rectangles, target) => {
   if (process.env.DEBUG) { _log(`Received ${rectangles.length} faces.`); }
 
@@ -67,7 +64,7 @@ const midlineVertical = (rectangles, target) => {
   for (row = 0; row < numRows; row++) {
     rowHasAFace = false;
     rectangles
-      .sort(_sortRectanglesByArea)
+      .sort(sortRectanglesByArea)
       .forEach(rectangle => {
         if (rowIsInside(rectangle, row)) {
           rowHasAFace = true;

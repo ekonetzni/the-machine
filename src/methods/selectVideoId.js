@@ -11,14 +11,17 @@ const METHOD_NAME = 'selectVideoId';
 const _log = msg => control(msg, METHOD_NAME);
 
 const selectVideoId = async (currentTarget, args) => {
-  const youtube = google.youtube({ version: 'v3', auth: process.env.YOUTUBE_KEY });
-  const params = {
-    part: 'id',
-    type: 'video',
-    q: currentTarget
-  };
-  const results = await youtube.search.list(params);
-  const result = results.data.items[0].id.videoId;
+  let result;
+  if (!process.env.SKIP_DOWNLOAD) {
+    const youtube = google.youtube({ version: 'v3', auth: process.env.YOUTUBE_KEY });
+    const params = {
+      part: 'id',
+      type: 'video',
+      q: currentTarget
+    };
+    const results = await youtube.search.list(params);
+    result = results.data.items[0].id.videoId;
+  }
 
   return {
     result,

@@ -21,7 +21,12 @@ const constructVideo = execute([
   getVideo,
   findFaceRectangles,
   getArrayData,
-  paintFaces,
+  paintFaces(
+    require('../modifiers/midlineWithBoundingRectangle')
+  ),
+  paintFaces(
+    require('../modifiers/blendEdges')
+  ),
   writeImage,
   publishImage,
   //cleanup,

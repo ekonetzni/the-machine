@@ -6,12 +6,10 @@
  */
 const { control, getRandomInt, writeBlob } = require('../utils');
 
-const mutation = require('../modifiers/midlineWithBoundingRectangle');
-
 const METHOD_NAME = 'paintFaces';
 const _log = msg => control(msg, METHOD_NAME);
 
-const paintFaces = async (currentTarget, args) => {
+const paintFaces = mutation => async (currentTarget, args) => {
   const { faceRectangles } = args.context;
 
   let result;
@@ -23,7 +21,7 @@ const paintFaces = async (currentTarget, args) => {
   result = mutation(faceRectangles, currentTarget);
 
   // Hacking here to try to keep memory footprint a bit lower.
-  currentTarget = [];
+  currentTarget = null;
   _log(
     `After processing, target has dimensions ${result.length}, ${result[0].length}`
   );

@@ -36,9 +36,11 @@ const findFaceRectangles = async (currentTarget, args) => {
         faceClassifier.detectMultiScale(
           frame.bgrToGray(),
           1.03,
-          4
+          50
         );
       isFaceFound = !!faces.objects.length
+
+      if (process.env.DEBUG) { _log(faces); }
 
       const { selectedFileName, settings } = args.context;
       const processedFileName = `ORIGINAL-${selectedFileName}.jpg`;
