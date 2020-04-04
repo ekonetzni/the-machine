@@ -1,7 +1,7 @@
 const { control } = require('../utils');
 const { generateArrayOfColor, sortRectanglesByArea } = require('./arrayHelpers');
 const RECT_PADDING = 100;
-const WIDTH_EXTEND_FACTOR = 250;
+const WIDTH_EXTEND_FACTOR = 1.50;
 
 const METHOD_NAME = 'midline';
 const _log = msg => control(msg, METHOD_NAME);
@@ -69,38 +69,16 @@ const midlineVertical = (rectangles, target) => {
       .forEach(rectangle => {
         if (rowIsInside(rectangle, row)) {
           rowHasAFace = true;
-          const originalLength = target[row].length;
-          const originalColor = target[row][0];
-          const middlePixelIndex = middleOfRectangle(rectangle);
-          const newWidth = Math.floor(rectangle.width + WIDTH_EXTEND_FACTOR);
-          const newColor = target[row][middlePixelIndex];
-          const bigFace =
+          // const bigFace =
+          //   generateArrayOfColor(
+          //     rectangle.width * WIDTH_EXTEND_FACTOR,
+          //     target[row][middleOfRectangle]
+          //   );
+          target[row] =
             generateArrayOfColor(
-              newWidth,
-              newColor
-            );
-
-          const _pixelsBefore = () => {
-            const result = middlePixelIndex - (newWidth / 2);
-            return result > 0 ? result : 0;
-          };
-
-          const _pixelsAfter = () =>
-            middlePixelIndex + (newWidth / 2);
-
-          target[row] = [
-            ...generateArrayOfColor(_pixelsBefore(), originalColor),
-            ...bigFace,
-            ...generateArrayOfColor(_pixelsAfter(), originalColor)
-          ];
-
-          // Rounding can give us something with the wrong length.
-          if (target[row].length > originalLength) {
-            target[row] = target[row].slice(0, originalLength)
-          }
-          while (target[row].length < originalLength) {
-            target[row].push(originalColor);
-          }
+              numColumns,
+              target[row][middleOfRectangle(rectangle)]
+            )
         }
       });
     if (!rowHasAFace) {
