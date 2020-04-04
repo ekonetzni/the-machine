@@ -1,4 +1,4 @@
-const { generateFilledRow } = require('./arrayHelpers');
+const { generateArrayOfColor } = require('./arrayHelpers');
 
 const midlineHorizontal = target => {
   const numRows = target.length;
@@ -9,7 +9,7 @@ const midlineHorizontal = target => {
   let column = 0;
   for (row = 0; row < numRows; row++) {
     const color = target[row][samplePixelIndex];
-    target[row] = generateFilledRow(numColumns, color);
+    target[row] = generateArrayOfColor(numColumns, color);
   }
   return target;
 };

@@ -1,4 +1,4 @@
-const generateFilledRow = (columns, colorValue) =>
+const generateArrayOfColor = (columns, colorValue) =>
   Array.from({ length: columns }, () => colorValue);
 
 const sortRectanglesByArea = (a, b) =>
@@ -27,7 +27,7 @@ const averageOf = sample =>
     .map(_sqrt);
 
 module.exports = {
-  generateFilledRow,
+  generateArrayOfColor,
   sortRectanglesByArea,
   averageOf,
   averageFactored

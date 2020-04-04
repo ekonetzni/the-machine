@@ -1,4 +1,4 @@
-const { generateFilledRow, sortRectanglesByArea, averageOf, averageFactored } = require('./arrayHelpers');
+const { generateArrayOfColor, sortRectanglesByArea, averageOf, averageFactored } = require('./arrayHelpers');
 const { control } = require('../utils');
 
 const METHOD_NAME = 'blendEdges';
@@ -10,7 +10,7 @@ const BLEND_SIZE = 10;
 const blendColor = (edgeColor, originalColor, distance) =>
   averageOf(
     [
-      // ...generateFilledRow(Math.floor(), edgeColor),
+      // ...generateArrayOfColor(Math.floor(), edgeColor),
       edgeColor,
       originalColor
     ]

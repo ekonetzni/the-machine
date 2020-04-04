@@ -1,6 +1,7 @@
 const { control } = require('../utils');
-const { generateFilledRow, sortRectanglesByArea } = require('./arrayHelpers');
+const { generateArrayOfColor, sortRectanglesByArea } = require('./arrayHelpers');
 const RECT_PADDING = 100;
+const WIDTH_EXTEND_FACTOR = 1.50;
 
 const METHOD_NAME = 'midline';
 const _log = msg => control(msg, METHOD_NAME);
@@ -25,7 +26,7 @@ const midlineHorizontal = (rectangle, target) => {
         : target[row][numColumns / 2];
 
     target[row] =
-      generateFilledRow(
+      generateArrayOfColor(
         numColumns,
         color
       )
@@ -68,8 +69,13 @@ const midlineVertical = (rectangles, target) => {
       .forEach(rectangle => {
         if (rowIsInside(rectangle, row)) {
           rowHasAFace = true;
+          // const bigFace =
+          //   generateArrayOfColor(
+          //     rectangle.width * WIDTH_EXTEND_FACTOR,
+          //     target[row][middleOfRectangle]
+          //   );
           target[row] =
-            generateFilledRow(
+            generateArrayOfColor(
               numColumns,
               target[row][middleOfRectangle(rectangle)]
             )
