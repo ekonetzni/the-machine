@@ -75,42 +75,6 @@ const blendEdges = (rectangles, target) => {
       rowIsWithinBelow(BLEND_SIZE)
     )
   );
-  // topEdges.forEach(edge => {
-  //   for (row = 0; row < numRows; row++) {
-  //     const isInRange = rowIsWithin(BLEND_SIZE)(row, edge);
-  //     if (isInRange.top) {
-  //       for (column = 0; column < numColumns; column++) {
-  //         const newColor =
-  //           averageFactored(
-  //             target[edge][column],
-  //             target[row][column],
-  //             (1 / BLEND_SIZE) * (edge - row)
-  //           );
-  //         // _log(`Changing ${target[row][column]} to ${newColor}`);
-  //         target[row][column] = newColor;
-  //       }
-  //     }
-  //   }
-  // })
-
-  // topEdges.forEach(edge => {
-  //   for (row = 0; row < numRows; row++) {
-  //     const isInRange = rowIsWithin(BLEND_SIZE)(row, edge);
-  //     if (isInRange.top) {
-  //       for (column = 0; column < numColumns; column++) {
-  //         const newColor =
-  //           averageFactored(
-  //             target[edge][column],
-  //             target[row][column],
-  //             (1 / BLEND_SIZE) * (edge - row)
-  //           );
-  //         // _log(`Changing ${target[row][column]} to ${newColor}`);
-  //         target[row][column] = newColor;
-  //       }
-  //     }
-  //   }
-  // })
-
   return target;
 };
 
