@@ -62,6 +62,7 @@ const midlineVertical = (rectangles, target) => {
   let row;
   let column;
   let rowHasAFace;
+  let sampleColor;
   for (row = 0; row < numRows; row++) {
     rowHasAFace = false;
     rectangles
@@ -69,11 +70,6 @@ const midlineVertical = (rectangles, target) => {
       .forEach(rectangle => {
         if (rowIsInside(rectangle, row)) {
           rowHasAFace = true;
-          // const bigFace =
-          //   generateArrayOfColor(
-          //     rectangle.width * WIDTH_EXTEND_FACTOR,
-          //     target[row][middleOfRectangle]
-          //   );
           target[row] =
             generateArrayOfColor(
               numColumns,
