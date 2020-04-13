@@ -45,7 +45,9 @@ const findFaceRectangles = async (currentTarget, args) => {
       const { selectedFileName, settings } = args.context;
       const processedFileName = `ORIGINAL-${selectedFileName}.jpg`;
       const destinationPath = `${settings.output}/${processedFileName}`;
-      cv.imwrite(destinationPath, frame);
+      if (process.env.DEBUG) {
+        cv.imwrite(destinationPath, frame);
+      }
     }
   }
 

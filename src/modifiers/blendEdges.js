@@ -5,7 +5,7 @@ const METHOD_NAME = 'blendEdges';
 const _log = msg => control(msg, METHOD_NAME);
 
 // How far away from the edge will blending occur.
-const BLEND_SIZE = 10;
+const BLEND_SIZE = 100;
 
 const blendColor = (edgeColor, originalColor, distance) =>
   averageOf(

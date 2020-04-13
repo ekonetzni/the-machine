@@ -1,5 +1,5 @@
 const { control } = require('../utils');
-const { generateArrayOfColor, sortRectanglesByArea } = require('./arrayHelpers');
+const { generateArrayOfColor, sortRectanglesByArea, averageFactored } = require('./arrayHelpers');
 const RECT_PADDING = 100;
 const WIDTH_EXTEND_FACTOR = 1.50;
 
