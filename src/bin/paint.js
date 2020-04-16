@@ -20,16 +20,16 @@ const constructVideo = execute([
   getVideo,
   getFrame,
   getArrayData,
-  makePainting,
+  makePainting(require('../modifiers/midlineHorizontalNoScaling')),
   writeImage,
   publishImage,
   cleanup,
-  exit
+  exit,
 ]);
 
 try {
   constructVideo({});
 } catch (err) {
-  control(err, "CRASH");
+  control(err, 'CRASH');
   process.exit(1);
 }

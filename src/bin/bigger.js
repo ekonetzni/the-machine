@@ -26,7 +26,7 @@ const filesFromDirectory = args =>
 const resize = machine([
   readImage,
   getArrayData,
-  makePainting,
+  makePainting(require('../modifiers/midlineHorizontalAverage')),
   writeImage,
   exit
 ]);

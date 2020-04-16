@@ -6,15 +6,11 @@
  */
 const { control, getRandomInt, writeBlob } = require('../utils');
 
-const midlineHorizontal = require('../modifiers/midlineHorizontalNoScaling');
-const midlineHorizontalAverage = require('../modifiers/midlineHorizontalAverage');
-
 const METHOD_NAME = 'makePainting';
 const _log = msg => control(msg, METHOD_NAME);
 
-const makePainting = async (currentTarget, args) => {
-  const { sizeFactor } = args.context.settings;
-  const result = midlineHorizontalAverage(sizeFactor)(currentTarget);
+const makePainting = method => async (currentTarget, args) => {
+  const result = method(currentTarget, args.context.settings);
   // Hacking here to try to keep memory footprint a bit lower.
   currentTarget = [];
   _log(
@@ -24,24 +20,24 @@ const makePainting = async (currentTarget, args) => {
   return {
     result,
     name: METHOD_NAME,
-    args
+    args,
   };
 };
 
 const __fire = async () => {
   const context = {
     selectedFileName: 'multiColorAverage15x.mp4',
-    settings: require('config').get('settings')
+    settings: require('config').get('settings'),
   };
 
   const writeImage = require('./writeImage');
   const painting = await makePainting(require('../mocks/multiColor.json'), {
-    context
+    context,
   });
 
   //writeBlob('./testData.json', painting.result);
   const written = await writeImage(painting.result, {
-    context
+    context,
   });
 };
 
