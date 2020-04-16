@@ -31,7 +31,6 @@ const resize = machine([
   exit
 ]);
 
-<<<<<<< HEAD
 const method =
   fs.lstatSync(process.argv[2]).isDirectory()
     ? filesFromDirectory
@@ -42,15 +41,3 @@ method(process.argv).forEach(async path => {
     selectedFileName: path.split('/').pop()
   });
 }
-=======
-async function go() {
-  const paths = filesFromArgs(process.argv);
-  for (let i = 0; i < paths.length; i++) {
-    const r = await resize(paths[i], {
-      selectedFileName: path.split('/').pop()
-    });
-  }
-};
-
-go();
->>>>>>> gardening
