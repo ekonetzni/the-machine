@@ -30,6 +30,7 @@ const _getFirstVideo = basePath =>
 
 const _epochNow = () => (new Date() / 1000).toPrecision(12);
 
+const TEST_FILE = '1585761455.71-UK coronavirus deaths jump by record 563 in a day Live updates.mp4';
 // currentTarget needs to be a videoId
 const getVideo = async (currentTarget, args) => {
   const { settings } = args.context;
@@ -44,7 +45,8 @@ const getVideo = async (currentTarget, args) => {
     });
     result = destinationPath;
   } else {
-    result = `${settings.source}/${_getFirstVideo(settings.source)}`;
+    _log('SKIPPING DOWNLOAD');
+    result = `${settings.source}/${TEST_FILE}`;
   }
 
   return {
@@ -54,7 +56,7 @@ const getVideo = async (currentTarget, args) => {
       ...args,
       context: {
         ...args.context,
-        selectedFileName: fileName
+        selectedFileName: process.env.SKIP_DOWNLOAD ? TEST_FILE : fileName
       }
     }
   };

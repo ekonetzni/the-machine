@@ -9,9 +9,11 @@ const dump = obj => util.inspect(obj, { showHidden: false, depth: null });
 const control = (subject, name = '') =>
   console.log(
     `[Control] {${name}} ${
-      typeof subject === 'string' ? subject : dump(subject)
+    typeof subject === 'string' ? subject : dump(subject)
     }`
   );
+const logError = (name, err) =>
+  console.log(`[Error] {${name}} ${err}`);
 
 const getRandomInt = (min, max) => {
   min = Math.ceil(min);
@@ -55,6 +57,7 @@ const exit = () => {
 module.exports = {
   dump,
   control,
+  logError,
   writeBlob,
   getRandomInt,
   readTitles,

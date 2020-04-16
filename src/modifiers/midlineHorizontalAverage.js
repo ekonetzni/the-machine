@@ -1,4 +1,4 @@
-const { generateFilledRow } = require('./arrayHelpers');
+const { generateArrayOfColor } = require('./arrayHelpers');
 const { control } = require('../utils');
 const METHOD_NAME = 'makePainting';
 const _log = msg => control(msg, METHOD_NAME);
@@ -46,7 +46,7 @@ const mhAverage = sizeFactor => original => {
       row % sizeFactor === 0
         ? original[originalRow][samplePixelIndex]
         : _averaged(_gatherSamples(original, originalRow, 2, samplePixelIndex));
-    modified[row] = generateFilledRow(modifiedColumns, color);
+    modified[row] = generateArrayOfColor(modifiedColumns, color);
   }
 
   return modified;

@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "paint": "node --unhandled-rejections=strict src/bin/paint.js",
+    "faces": "node --unhandled-rejections=strict src/bin/faces.js",
     "enlarge": "node --max-old-space-size=8192 src/bin/bigger.js"
   },
   "author": "",

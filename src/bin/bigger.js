@@ -19,6 +19,10 @@ const filesFromArgs = args => {
   return paths;
 };
 
+const filesFromDirectory = args =>
+  fs.readdirSync(args[2])
+    .filter(file => file.split('.').pop() === 'jpg');
+
 const resize = machine([
   readImage,
   getArrayData,
@@ -27,7 +31,12 @@ const resize = machine([
   exit
 ]);
 
-filesFromArgs(process.argv).forEach(async path => {
+const method =
+  fs.lstatSync(process.argv[2]).isDirectory()
+    ? filesFromDirectory
+    : filesFromArgs;
+
+method(process.argv).forEach(async path => {
   const r = await resize(path, {
     selectedFileName: path.split('/').pop()
   });
