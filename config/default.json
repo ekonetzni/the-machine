@@ -5,7 +5,11 @@
   "settings": {
     "source": "./media/source",
     "output": "./media/output",
-    "feed": "https://www.aljazeera.com/xml/rss/all.xml",
+    "feeds": [
+      "https://hnrss.org/newest",
+      "https://www.aljazeera.com/xml/rss/all.xml",
+      "https://rss.nytimes.com/services/xml/rss/nyt/Arts.xml"
+    ],
     "repositoryUrl": "git@github.com:ekonetzni/ekonetzni.github.io.git",
     "repositoryPath": "./repo",
     "deployPath": "img/faces",
