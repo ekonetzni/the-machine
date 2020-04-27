@@ -11,30 +11,23 @@ const METHOD_NAME = 'cleanup';
 const _log = msg => control(msg, METHOD_NAME);
 
 const cleanup = async (currentTarget, args) => {
-  let result = false;
-  if (currentTarget) {
-    const { selectedFileName, processedFileName, settings } = args.context;
-    const { source, output } = settings;
+  const { source, output } = args.context.settings;
 
-    const sourceFile = `${source}/${selectedFileName}`;
-    const outputFile = `${output}/${processedFileName}`
-    _log(`Cleaning up ${sourceFile}`);
-    _log(`Cleaning up ${outputFile}`);
-    fs.unlinkSync(sourceFile);
-    fs.unlinkSync(outputFile)
-    result = true;
-  }
+  const _rm = (dir, file) => fs.unlinkSync(`${dir}/${file}`);
+
+  _log(`Cleaning up ${source}`);
+  _log(`Cleaning up ${output}`);
+  fs.readdirSync(source).forEach(file => _rm(source, file));
+  fs.readdirSync(output).forEach(file => _rm(output, file));
 
   return {
     result: true,
     name: METHOD_NAME,
-    args
+    args,
   };
 };
 
-const __fire = async () => {
-
-};
+const __fire = async () => {};
 
 // __fire();
 

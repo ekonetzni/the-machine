@@ -14,28 +14,28 @@ const writeImage = require('../methods/writeImage');
 const publishImage = require('../methods/publishImage');
 const cleanup = require('../methods/cleanup');
 
-const constructVideo = execute([
+const methods = [
   getQueries,
   selectTitle,
   selectVideoId,
   getVideo,
   findFaceRectangles,
   getArrayData,
-  paintFaces(
-    require('../modifiers/midlineWithBoundingRectangle')
-  ),
-  paintFaces(
-    require('../modifiers/blendEdges')
-  ),
+  paintFaces(require('../modifiers/midlineWithBoundingRectangle')),
+  paintFaces(require('../modifiers/blendEdges')),
   writeImage,
   publishImage,
   //cleanup,
-  exit
-]);
+  exit,
+];
+
+const finallyTasks = [cleanup, exit];
+
+const constructVideo = execute(methods, finallyTasks);
 
 try {
   constructVideo({});
 } catch (err) {
-  control(err, "CRASH");
+  control(err, 'CRASH');
   process.exit(1);
 }

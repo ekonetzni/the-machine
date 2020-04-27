@@ -13,19 +13,20 @@ const writeImage = require('../methods/writeImage');
 const publishImage = require('../methods/publishImage');
 const cleanup = require('../methods/cleanup');
 
-const constructVideo = execute([
-  getQueries,
-  selectTitle,
-  selectVideoId,
-  getVideo,
-  getFrame,
-  getArrayData,
-  makePainting(require('../modifiers/midlineHorizontalNoScaling')),
-  writeImage,
-  publishImage,
-  cleanup,
-  exit,
-]);
+const constructVideo = execute(
+  [
+    getQueries,
+    selectTitle,
+    selectVideoId,
+    getVideo,
+    getFrame,
+    getArrayData,
+    makePainting(require('../modifiers/midlineHorizontalNoScaling')),
+    writeImage,
+    publishImage,
+  ],
+  [cleanup, exit]
+);
 
 try {
   constructVideo({});

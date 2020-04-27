@@ -27,15 +27,18 @@ const executor = async (previousResult, currentMethod, index) => {
   try {
     return await currentMethod(result, {
       params: args.params,
-      context: args.context
+      context: args.context,
     });
   } catch (err) {
     logError('Machine', err);
-    if (process.env.DEBUG) { throw (err) };
+    throw err;
   }
 };
 
-const execute = methods => async (initialTarget = {}, context = {}) => {
+const execute = (methods, finallyTasks) => async (
+  initialTarget = {},
+  context = {}
+) => {
   const initialValue = {
     result: initialTarget,
     name: 'initial',
@@ -43,12 +46,20 @@ const execute = methods => async (initialTarget = {}, context = {}) => {
       params: {},
       context: {
         settings,
-        ...context
-      }
-    }
+        ...context,
+      },
+    },
   };
   control(`Beginning execution`);
-  const result = await methods.reduce(executor, initialValue);
+
+  let result;
+  try {
+    result = await methods.reduce(executor, initialValue);
+  } finally {
+    control(`Executing finally block`);
+    result = await finallyTasks.reduce(executor, initialValue);
+  }
+
   control(`Result ${dump(result)}`);
 };
 
