@@ -25,8 +25,6 @@ const methods = [
   paintFaces(require('../modifiers/blendEdges')),
   writeImage,
   publishImage,
-  //cleanup,
-  exit,
 ];
 
 const finallyTasks = [cleanup, exit];
