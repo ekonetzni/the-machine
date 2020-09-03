@@ -6,14 +6,14 @@ const writeBlob = (path, arrayData) =>
   fs.writeFileSync(path, JSON.stringify(arrayData));
 
 const dump = obj => util.inspect(obj, { showHidden: false, depth: null });
-const control = (subject, name = '') =>
+const control = (subject, name = '', meta) =>
   console.log(
     `[Control] {${name}} ${
-    typeof subject === 'string' ? subject : dump(subject)
-    }`
+      typeof subject === 'string' ? subject : dump(subject)
+    }`,
+    meta
   );
-const logError = (name, err) =>
-  console.log(`[Error] {${name}} ${err}`);
+const logError = (name, err) => console.log(`[Error] {${name}} ${err}`);
 
 const getRandomInt = (min, max) => {
   min = Math.ceil(min);
@@ -63,5 +63,5 @@ module.exports = {
   readTitles,
   bailNoUniqueTitle,
   bailNoValidFiles,
-  exit
+  exit,
 };
