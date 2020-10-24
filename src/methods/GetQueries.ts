@@ -16,7 +16,7 @@ export class GetQueries extends Method {
     this.log(`Rss result: ${items.length} items`);
 
     return {
-      result: items.map(item => item.title),
+      result: items.map((item: any) => item.title),
       name: this.name,
       args,
     };

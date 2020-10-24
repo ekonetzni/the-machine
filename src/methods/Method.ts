@@ -8,13 +8,13 @@ export type MethodArgs = {
 };
 
 // result here should always maintain the same type as currentTarget on Method.execute
-export type MethodResult = {
-  result: any;
+export type MethodResult<T> = {
+  result: T;
   name: string;
   args: MethodArgs;
 };
 
-export abstract class Method {
+export abstract class Method<T, U> {
   abstract readonly name: string;
 
   constructor() {}
@@ -23,7 +23,7 @@ export abstract class Method {
     control(msg, this.name, meta);
 
   public abstract async execute(
-    currentTarget: any,
+    currentTarget: T,
     args: MethodArgs
-  ): Promise<any>;
+  ): Promise<MethodResult<U>>;
 }

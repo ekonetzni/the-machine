@@ -13,7 +13,9 @@
   "dependencies": {
     "config": "^3.2.5",
     "dotenv": "^8.2.0",
+    "face-api.js": "^0.22.2",
     "feedparser-promised": "^2.0.1",
+    "ffmpeg-extract-frames": "^2.0.2",
     "googleapis": "^47.0.0",
     "simple-git": "^1.131.0",
     "winston": "^3.3.3",
