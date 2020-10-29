@@ -1,14 +1,11 @@
-import { Method, MethodArgs, MethodResult } from './Method';
+import { Method, MethodArgs } from './Method';
 import { getRandomInt } from '../utils';
 import feedparser from 'feedparser-promised';
 
-export class GetQueries extends Method {
+export class GetQueries extends Method<undefined, string[]> {
   public readonly name: string = 'get-queries';
 
-  public async execute(
-    _currentTarget: any,
-    args: MethodArgs
-  ): Promise<MethodResult> {
+  public execute = async (_currentTarget: undefined, args: MethodArgs) => {
     const { settings } = args.context;
     const selectedFeed =
       settings.feeds[getRandomInt(0, settings.feeds.length - 1)];
@@ -20,5 +17,5 @@ export class GetQueries extends Method {
       name: this.name,
       args,
     };
-  }
+  };
 }

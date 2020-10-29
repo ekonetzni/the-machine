@@ -9,25 +9,28 @@ const settings = config.get('settings');
 
 class Machine {
   private log: Logger;
-  private readonly methods: Array<Method>;
-  private readonly finallyTasks: Array<Method>;
+  private readonly methods: Array<Method<unknown, unknown>>;
+  private readonly finallyTasks: Array<Method<unknown, unknown>>;
 
-  constructor(methods: Array<Method>, finallyTasks: Array<Method>) {
+  constructor(
+    methods: Array<Method<unknown, unknown>>,
+    finallyTasks: Array<Method<unknown, unknown>>
+  ) {
     this.methods = methods;
     this.finallyTasks = finallyTasks;
   }
 
   private executor = async (
-    previousResult: Partial<MethodResult>,
-    currentMethod: Method
-  ): Promise<MethodResult> => {
+    previousResult: Partial<MethodResult<unknown>>,
+    currentMethod: Method<unknown, unknown>
+  ): Promise<MethodResult<unknown>> => {
     const { result, args } = await previousResult;
     control(`Executing ${currentMethod.name}`);
 
     try {
       return await currentMethod.execute(result, {
-        params: args.params,
-        context: args.context,
+        params: args?.params,
+        context: args?.context,
       });
     } catch (err) {
       logError('Machine', err);

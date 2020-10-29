@@ -1,6 +1,6 @@
-const util = require('util');
-const config = require('config');
-const fs = require('fs');
+import util from 'util';
+import config from 'config';
+import fs from 'fs';
 
 const writeBlob = (path, arrayData) =>
   fs.writeFileSync(path, JSON.stringify(arrayData));
@@ -54,7 +54,7 @@ const exit = () => {
   process.exit(0);
 };
 
-module.exports = {
+export {
   dump,
   control,
   logError,

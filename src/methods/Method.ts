@@ -1,7 +1,7 @@
 import { control } from '../utils';
 
 export type MethodArgs = {
-  previousTargets?: Array<any>;
+  previousTargets?: Array<unknown>;
   params: any;
   context: any;
   name?: string;
@@ -14,6 +14,11 @@ export type MethodResult<T> = {
   args: MethodArgs;
 };
 
+// Not sure this interface is necessary
+export interface IMethod<T, U> {
+  execute: (currentTarget: T, args: MethodArgs) => Promise<MethodResult<U>>;
+}
+
 export abstract class Method<T, U> {
   abstract readonly name: string;
 
@@ -22,7 +27,7 @@ export abstract class Method<T, U> {
   protected readonly log = (msg: string, meta?: any) =>
     control(msg, this.name, meta);
 
-  public abstract async execute(
+  abstract async execute(
     currentTarget: T,
     args: MethodArgs
   ): Promise<MethodResult<U>>;
